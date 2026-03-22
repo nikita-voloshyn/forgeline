@@ -10,5 +10,6 @@
   "repository": "https://github.com/nikita-voloshyn/forgeline",
   "license": "MIT",
   "keywords": ["agents", "multi-agent", "scaffold", "developer-tools", "claude-code", "workspace", "automation", "plugin"],
+  "skills": "./",
   "hooks": {}
 }
