@@ -1,0 +1,14 @@
+{
+  "PostToolUse": [
+    {
+      "matcher": "*",
+      "description": "Lint check after DevForge skill or agent file edits",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "echo '[DevForge] File edited: '\"$CLAUDE_FILE_PATH\""
+        }
+      ]
+    }
+  ]
+}
