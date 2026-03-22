@@ -1,6 +1,6 @@
 ---
 name: setup-agents
-description: Scaffold a complete multi-agent Claude Code development system for any project. Run this in any repo to generate agents, skills, hooks, and documentation tailored to your tech stack. Triggers on "setup agents", "scaffold agents", "initialize agent system", "setup devforge".
+description: Scaffold a complete multi-agent Claude Code development system for any project. Run this in any repo to generate agents, skills, hooks, and documentation tailored to your tech stack. Triggers on "setup agents", "scaffold agents", "initialize agent system", "setup forgeline".
 ---
 
 # /setup-agents
@@ -72,12 +72,12 @@ Present the full list with checkboxes and wait for confirmation.
 
 **Context7 is always enabled. Non-negotiable.**
 
-Use Context7 now (`resolve-library-id` → `query-docs`) to verify current best practices and plugin recommendations for the detected tech stack before presenting options.
+Delegate to the `system-architect` agent: pass it the detected tech stack from Steps 1–3 and ask it to use Context7 (`resolve-library-id` → `query-docs`) to verify current best practices and return plugin recommendations. Do not perform Context7 lookups directly from the skill — this is analysis work that belongs to the agent.
 
-Always include:
+Once the agent returns its recommendations, present them to the user. Always include:
 - `context7` — mandatory for all projects
 
-Recommend based on detected stack:
+Default recommendations based on detected stack:
 - `typescript-lsp` — if TypeScript detected
 - `rust-analyzer-lsp` — if Cargo.toml detected
 - `github` — if GitHub remote detected
