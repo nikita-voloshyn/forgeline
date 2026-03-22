@@ -1,0 +1,51 @@
+---
+name: changelog
+description: "Generate a session changelog from git diff. Triggers on 'changelog', 'what changed', 'session summary', 'diff summary'."
+---
+
+# /changelog
+
+Generate a changelog entry for the current session in {{projectName}}.
+
+## Steps
+
+1. **Gather changes**
+
+   Run: `{{#if changelogDepth}}git diff --stat HEAD~{{changelogDepth}}..HEAD{{else}}git diff --stat HEAD~1..HEAD{{/if}}`
+
+   If no commits yet in this session, use: `git diff --stat`
+
+2. **Categorize changes**
+
+   Group files by type:
+   - **Added** — new files
+   - **Modified** — changed files
+   - **Deleted** — removed files
+
+   Then group by domain:
+{{#each agents}}
+   - `{{name}}`: {{#each owns}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}
+{{/each}}
+
+3. **Write entry**
+
+   Format as a markdown changelog entry:
+
+   ```markdown
+   ## [Session] {{currentDate}}
+
+   ### Added
+   - ...
+
+   ### Changed
+   - ...
+
+   ### Fixed
+   - ...
+   ```
+
+   Focus on the **why**, not the **what**. Describe the purpose of changes, not just file names.
+
+4. **Output**
+
+   Print the changelog entry to the terminal. Do not write to a file unless the user asks.

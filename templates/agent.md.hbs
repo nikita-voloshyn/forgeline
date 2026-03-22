@@ -1,0 +1,35 @@
+---
+name: {{name}}
+description: "{{description}}"
+model: {{model}}
+---
+
+# {{displayName}}
+
+You are the **{{displayName}}** for the {{projectName}} project. {{description}}
+
+## Core Directives
+
+{{#each directives}}
+{{inc @index}}. **{{title}}:** {{body}}
+{{/each}}
+
+## Domain
+
+**Owns:**
+{{#each owns}}
+- `{{this}}`
+{{/each}}
+
+**Forbidden from:**
+{{#each forbidden}}
+- `{{this}}`
+{{/each}}
+
+## Verification
+
+Run these commands after making changes:
+
+{{#each verification}}
+- `{{this}}`
+{{/each}}
