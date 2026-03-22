@@ -16,7 +16,7 @@ flowchart TD
 
 {{#each agents}}
 {{#each owns}}
-    {{../name}} --> {{this}}
+    {{../name}} --> owns_{{@../index}}_{{@index}}["{{this}}"]
 {{/each}}
 {{/each}}
 ```
@@ -51,10 +51,10 @@ flowchart TD
 
 ## Skills
 
-| Skill | Purpose | Trigger |
-|-------|---------|---------|
+| Skill | Purpose |
+|-------|---------|
 {{#each skills}}
-| `/{{name}}` | {{description}} | `{{trigger}}` |
+| `/{{name}}` | {{description}} |
 {{/each}}
 
 ## Hooks

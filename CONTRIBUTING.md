@@ -63,6 +63,16 @@ Templates receive the confirmed configuration from the 7-step dialogue:
 - `{{hooks}}` — PostToolUse and Stop hook definitions
 - `{{permissions}}` — allow and deny lists
 - `{{stack}}` — detected tech stack details
+- `{{linter}}` — linter config object (`command`)
+- `{{typeChecker}}` — type checker config object (`command`)
+- `{{testRunner}}` — test runner config object (`command`)
+- `{{changelogDepth}}` — number of commits for changelog diff (default: 1)
+
+### Helpers
+
+Templates use the following custom Handlebars helpers:
+
+- `{{inc value}}` — increments a number by 1 (used for 1-based indexing)
 
 ### Testing Templates
 

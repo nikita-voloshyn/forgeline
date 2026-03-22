@@ -11,7 +11,7 @@ Generate a changelog entry for the current session in {{projectName}}.
 
 1. **Gather changes**
 
-   Run: `git diff --stat HEAD~{{changelogDepth}}..HEAD`
+   Run: `{{#if changelogDepth}}git diff --stat HEAD~{{changelogDepth}}..HEAD{{else}}git diff --stat HEAD~1..HEAD{{/if}}`
 
    If no commits yet in this session, use: `git diff --stat`
 

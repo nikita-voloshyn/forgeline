@@ -8,15 +8,13 @@
 |---|-------|--------|-------------|
 {{#each phases}}
 | {{number}} | {{name}} | {{status}} | {{description}} |
-{{/each}}
-
-{{#unless phases}}
+{{else}}
 | 1 | Setup | Pending | Project scaffolding and initial configuration |
 | 2 | Core | Pending | Core feature implementation |
 | 3 | Testing | Pending | Test coverage and quality assurance |
 | 4 | Polish | Pending | Documentation, refactoring, edge cases |
 | 5 | Release | Pending | Deployment preparation and launch |
-{{/unless}}
+{{/each}}
 
 ## Notes
 
