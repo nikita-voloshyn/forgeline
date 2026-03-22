@@ -1,5 +1,7 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "forgeline",
+  "description": "Scaffold a production-ready multi-agent Claude Code development system for any project.",
   "owner": {
     "name": "nikita-voloshyn",
     "url": "https://github.com/nikita-voloshyn"
@@ -7,13 +9,15 @@
   "plugins": [
     {
       "name": "forgeline",
-      "description": "Scaffold a production-ready multi-agent Claude Code development system for any project.",
+      "description": "Scaffold a production-ready multi-agent Claude Code development system for any project from its vision and tech stack.",
       "version": "0.2.0-beta",
+      "author": {
+        "name": "nikita-voloshyn",
+        "url": "https://github.com/nikita-voloshyn"
+      },
       "source": "./",
-      "category": "productivity",
-      "homepage": "https://github.com/nikita-voloshyn/forgeline",
-      "license": "MIT",
-      "keywords": ["agents", "multi-agent", "scaffold", "developer-tools", "claude-code", "workspace", "automation"]
+      "category": "development",
+      "homepage": "https://github.com/nikita-voloshyn/forgeline"
     }
   ]
 }
