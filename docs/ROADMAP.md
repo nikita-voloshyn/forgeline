@@ -39,8 +39,8 @@ All 9 templates required for the system-architect agent to produce output:
 
 - [x] Context7 workflow — explicit instructions for how the agent performs lookups and returns results to the skill
 - [x] Linter/formatter auto-detection — detection logic with fallback chain (Biome → ESLint, Clippy, Ruff → Black, gofmt)
-- [ ] Hook command generation — templated commands with stack-specific linter paths
-- [ ] settings.json / settings.local.json generation — plugins, permissions, MCP servers
+- [x] Hook command generation — templated commands with stack-specific linter paths, polyglot routing, Stop secrets scan
+- [x] settings.json / settings.local.json generation — full format with mapping from dialogue steps
 
 ### ~~Output Path Consistency~~ (resolved)
 

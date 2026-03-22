@@ -110,33 +110,110 @@ Detect the primary linter by checking config files in the target project. Use th
 
 If no config file is found for a detected language, use Context7 to look up the current recommended linter for that stack.
 
-## hooks.json Format
+## hooks.json Generation
+
+Use the detected linter from the table above to build the final hooks.json.
+
+**PostToolUse hook:** Auto-lint after file edits. Replace `<linter-command>` with the detected command.
+
+**Stop hook:** Scan for hardcoded secrets at session end. Use `grep -rn` to check for common patterns.
+
+**Polyglot projects:** If the project uses multiple languages (e.g., TypeScript frontend + Python backend), create one PostToolUse hook that routes by file extension:
 
 ```json
 {
   "PostToolUse": [
     {
       "matcher": "Edit|Write|MultiEdit",
+      "description": "Auto-lint after file edits",
       "hooks": [
         {
           "type": "command",
-          "command": "<linter> \"$CLAUDE_FILE_PATH\" 2>/dev/null || true"
+          "command": "<single-stack or polyglot command>"
         }
       ]
     }
   ],
   "Stop": [
     {
+      "description": "Scan for hardcoded secrets before session ends",
       "hooks": [
         {
           "type": "command",
-          "command": "<safety scan command>"
+          "command": "grep -rn 'API_KEY\\|SECRET\\|PASSWORD\\|PRIVATE_KEY\\|Bearer ' --include='*.ts' --include='*.js' --include='*.py' --include='*.go' --include='*.rs' . 2>/dev/null | grep -v node_modules | grep -v '.env.example' | head -20 && echo '[Forgeline] Review any matches above for hardcoded secrets' || true"
         }
       ]
     }
   ]
 }
 ```
+
+**Single-stack command examples:**
+- TypeScript (Biome): `biome check "$CLAUDE_FILE_PATH" 2>/dev/null || true`
+- TypeScript (ESLint): `eslint "$CLAUDE_FILE_PATH" 2>/dev/null || true`
+- Rust: `cargo clippy --quiet 2>/dev/null || true`
+- Python (Ruff): `ruff check "$CLAUDE_FILE_PATH" 2>/dev/null || true`
+- Go: `gofmt -l "$CLAUDE_FILE_PATH" 2>/dev/null || true`
+
+**Polyglot command pattern:**
+```sh
+case "$CLAUDE_FILE_PATH" in
+  *.ts|*.tsx|*.js|*.jsx) biome check "$CLAUDE_FILE_PATH" 2>/dev/null || true ;;
+  *.py) ruff check "$CLAUDE_FILE_PATH" 2>/dev/null || true ;;
+  *.go) gofmt -l "$CLAUDE_FILE_PATH" 2>/dev/null || true ;;
+  *.rs) cargo clippy --quiet 2>/dev/null || true ;;
+esac
+```
+
+## settings.json / settings.local.json Generation
+
+Map the confirmed configuration from Steps 4–6 into two files:
+
+### `.claude/settings.json` (shared, committed to git)
+
+Contains: deny permissions, hooks reference, environment variables.
+
+```json
+{
+  "$schema": "https://json-schema.store/claude-code-settings.json",
+  "permissions": {
+    "deny": [
+      "Read(.env)",
+      "Read(.env.*)",
+      "Read(secrets/**)",
+      "Read(~/.ssh/**)",
+      "Write(.env)",
+      "Write(.env.*)"
+    ]
+  }
+}
+```
+
+**Mapping from confirmed config:**
+- `permissions.deny` ← Step 6 deny list (always include the defaults above, extend with user additions)
+
+### `.claude/settings.local.json` (personal, NOT committed)
+
+Contains: allow permissions, MCP server configurations.
+
+```json
+{
+  "permissions": {
+    "allow": [
+      "Bash(git:*)",
+      "Bash(gh pr:*)",
+      "Bash(<package-manager>:*)"
+    ]
+  },
+  "mcpServers": {}
+}
+```
+
+**Mapping from confirmed config:**
+- `permissions.allow` ← Step 6 allow list (substitute detected package manager: npm, pnpm, yarn, cargo, pip, go)
+- `mcpServers` ← Step 4 plugin selections that require MCP (e.g., Context7)
+
+**Important:** After generating `settings.local.json`, ensure git ignores it. Add `.claude/settings.local.json` to the project's `.gitignore` if not already present.
 
 ## Verification
 
