@@ -57,16 +57,23 @@ Per the [design spec](docs/specs/2026-03-22-forgeline-design.md):
 Templates receive the confirmed configuration from the 7-step dialogue:
 
 - `{{projectName}}` — target project name
-- `{{agents}}` — array of confirmed agents (name, model, domain, forbidden zones)
-- `{{skills}}` — array of confirmed skills (name, description, steps)
-- `{{plugins}}` — array of confirmed plugins
-- `{{hooks}}` — PostToolUse and Stop hook definitions
+- `{{projectDescription}}` — one-line project description
+- `{{projectStructure}}` — directory tree overview
+- `{{agents}}` — array of confirmed agents (`name`, `model`, `displayName`, `domain`, `directives`, `owns`, `forbidden`, `verification`)
+- `{{skills}}` — array of confirmed skills (`name`, `description`, `steps`)
+- `{{plugins}}` — array of confirmed plugins (`name`, `reason`)
+- `{{hooks}}` — PostToolUse and Stop hook definitions (`command`)
 - `{{permissions}}` — allow and deny lists
 - `{{stack}}` — detected tech stack details
-- `{{linter}}` — linter config object (`command`)
-- `{{typeChecker}}` — type checker config object (`command`)
-- `{{testRunner}}` — test runner config object (`command`)
+- `{{commands}}` — project command reference
+- `{{phases}}` — development plan phases (`number`, `name`, `status`, `description`)
+- `{{packageManager}}` — package manager config (`commands`, `auditCommand`)
+- `{{linter}}` — linter config (`command`, `fixCommand`)
+- `{{typeChecker}}` — type checker config (`command`)
+- `{{testRunner}}` — test runner config (`command`, `watchCommand`)
+- `{{buildCommand}}` — project build command
 - `{{changelogDepth}}` — number of commits for changelog diff (default: 1)
+- `{{currentDate}}` — current date for changelog entries
 
 ### Helpers
 

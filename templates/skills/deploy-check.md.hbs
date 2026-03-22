@@ -18,7 +18,7 @@ Pre-deployment audit for {{projectName}}.
    Search for hardcoded secrets:
 
    ```bash
-   grep -rn 'API_KEY\|SECRET\|PASSWORD\|PRIVATE_KEY\|Bearer ' --include='*.ts' --include='*.js' --include='*.py' --include='*.go' --include='*.rs' . | grep -v node_modules | grep -v '.env.example'
+   grep -Ern 'API_KEY|SECRET|PASSWORD|PRIVATE_KEY|Bearer ' --include='*.ts' --include='*.js' --include='*.py' --include='*.go' --include='*.rs' . | grep -v node_modules | grep -v '.env.example'
    ```
 
    Report any findings. If secrets are found, **stop and flag**.
