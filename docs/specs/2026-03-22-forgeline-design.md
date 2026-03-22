@@ -97,8 +97,9 @@ Full system summary presented. Generation only starts after explicit confirmatio
 ## Output (generated in target project)
 
 ```
-.claude-plugin/
-└── plugin.json              — plugins, hooks references
+.claude/
+├── settings.json            — hooks, deny permissions (shared with team)
+└── settings.local.json      — allow permissions, MCP servers (personal)
 
 agents/
 └── <name>.md                — one per confirmed agent
@@ -115,6 +116,8 @@ docs/
 ├── development-plan.md      — phase tracker
 └── commands.md              — command reference
 ```
+
+> **Why `.claude/` and not `.claude-plugin/`?** Forgeline generates a project-specific workspace, not a reusable plugin. Per Claude Code docs, standalone `.claude/` is the correct approach for project-specific customizations.
 
 ---
 
