@@ -17,7 +17,8 @@ Forgeline is a Claude Code plugin that scaffolds multi-agent development systems
 ```
 forgeline/
 ├── .claude-plugin/
-│   └── plugin.json              — plugin manifest (only location)
+│   ├── plugin.json              — plugin manifest (no skills/hooks fields — auto-discovery)
+│   └── marketplace.json         — marketplace manifest (required for /plugin marketplace add)
 ├── agents/
 │   └── system-architect.md      — Opus 4.6 agent, reads + generates
 ├── skills/
@@ -38,6 +39,12 @@ forgeline/
 ├── SECURITY.md
 └── LICENSE
 ```
+
+## Plugin Packaging Rules
+
+1. **No `skills` field in plugin.json** — Claude Code auto-discovers skills at `skills/*/SKILL.md`. Adding explicit `skills` breaks discovery or validation.
+2. **`marketplace.json` required** — without it, `/plugin marketplace add` silently fails to clone the repo.
+3. **Testing changes** — after pushing, clear all 5 cache locations before reinstalling (see memory for details). Restart terminal tab.
 
 ## Commands
 
