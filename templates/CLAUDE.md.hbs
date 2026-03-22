@@ -1,0 +1,45 @@
+# CLAUDE.md — {{projectName}}
+
+## Project Overview
+
+{{projectDescription}}
+
+## Architecture Rules
+
+1. **Agent boundaries:** Each agent owns a specific domain. Do not modify files outside your domain without explicit delegation.
+2. **Context7 for best practices:** Always use Context7 (`resolve-library-id` → `query-docs`) to verify current best practices before making decisions about frameworks, libraries, or tooling.
+3. **English only:** All generated files, comments, and documentation must be in English.
+4. **No assumptions:** If requirements are ambiguous, ask — never guess.
+5. **Test before committing:** Run the relevant verification commands from your agent definition before considering work complete.
+
+## Tech Stack
+
+{{#each stack}}
+- **{{name}}:** {{value}}
+{{/each}}
+
+## Agents
+
+| Agent | Domain | Model |
+|-------|--------|-------|
+{{#each agents}}
+| `{{name}}` | {{domain}} | {{model}} |
+{{/each}}
+
+## Skills
+
+{{#each skills}}
+- `/{{name}}` — {{description}}
+{{/each}}
+
+## Project Structure
+
+```
+{{projectStructure}}
+```
+
+## Commands
+
+{{#each commands}}
+- `{{command}}` — {{description}}
+{{/each}}

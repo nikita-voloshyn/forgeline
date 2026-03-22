@@ -25,15 +25,15 @@
 
 All 9 templates required for the system-architect agent to produce output:
 
-- [ ] `templates/CLAUDE.md.hbs` — architecture rules for target project
-- [ ] `templates/agent.md.hbs` — agent definition (one per agent)
-- [ ] `templates/agentic-system.md.hbs` — system docs with Mermaid diagrams
-- [ ] `templates/development-plan.md.hbs` — phase tracker
-- [ ] `templates/commands.md.hbs` — command reference
-- [ ] `templates/skills/check.md.hbs` — `/check` quality pipeline
-- [ ] `templates/skills/changelog.md.hbs` — `/changelog` session changelog
-- [ ] `templates/skills/phase.md.hbs` — `/phase` feature executor
-- [ ] `templates/skills/deploy-check.md.hbs` — `/deploy-check` pre-deployment audit
+- [x] `templates/CLAUDE.md.hbs` — architecture rules for target project
+- [x] `templates/agent.md.hbs` — agent definition (one per agent)
+- [x] `templates/agentic-system.md.hbs` — system docs with Mermaid diagrams
+- [x] `templates/development-plan.md.hbs` — phase tracker
+- [x] `templates/commands.md.hbs` — command reference
+- [x] `templates/skills/check.md.hbs` — `/check` quality pipeline
+- [x] `templates/skills/changelog.md.hbs` — `/changelog` session changelog
+- [x] `templates/skills/phase.md.hbs` — `/phase` feature executor
+- [x] `templates/skills/deploy-check.md.hbs` — `/deploy-check` pre-deployment audit
 
 ### Agent Implementation Details
 

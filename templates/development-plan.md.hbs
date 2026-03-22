@@ -1,0 +1,25 @@
+# {{projectName}} — Development Plan
+
+> Use `/phase` to execute phases step by step.
+
+## Phases
+
+| # | Phase | Status | Description |
+|---|-------|--------|-------------|
+{{#each phases}}
+| {{number}} | {{name}} | {{status}} | {{description}} |
+{{/each}}
+
+{{#unless phases}}
+| 1 | Setup | Pending | Project scaffolding and initial configuration |
+| 2 | Core | Pending | Core feature implementation |
+| 3 | Testing | Pending | Test coverage and quality assurance |
+| 4 | Polish | Pending | Documentation, refactoring, edge cases |
+| 5 | Release | Pending | Deployment preparation and launch |
+{{/unless}}
+
+## Notes
+
+- Update the **Status** column as you progress: `Pending` → `In Progress` → `Done`
+- Each phase can be broken into sub-tasks as needed
+- Use `/phase` skill to get guided execution for the current phase

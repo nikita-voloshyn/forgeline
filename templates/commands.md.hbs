@@ -1,0 +1,58 @@
+# {{projectName}} — Command Reference
+
+> Quick reference for all available commands in this project.
+
+## Package Manager
+
+| Command | Description |
+|---------|-------------|
+{{#each packageManager.commands}}
+| `{{command}}` | {{description}} |
+{{/each}}
+
+## Git
+
+| Command | Description |
+|---------|-------------|
+| `git status` | Show working tree status |
+| `git diff` | Show unstaged changes |
+| `gh pr create` | Create a pull request |
+| `gh pr list` | List open pull requests |
+
+## Skills
+
+| Skill | Description |
+|-------|-------------|
+{{#each skills}}
+| `/{{name}}` | {{description}} |
+{{/each}}
+
+{{#if linter}}
+## Linting
+
+| Command | Description |
+|---------|-------------|
+| `{{linter.command}}` | Run linter |
+{{#if linter.fixCommand}}
+| `{{linter.fixCommand}}` | Auto-fix lint issues |
+{{/if}}
+{{/if}}
+
+{{#if testRunner}}
+## Testing
+
+| Command | Description |
+|---------|-------------|
+| `{{testRunner.command}}` | Run tests |
+{{#if testRunner.watchCommand}}
+| `{{testRunner.watchCommand}}` | Run tests in watch mode |
+{{/if}}
+{{/if}}
+
+{{#if buildCommand}}
+## Build
+
+| Command | Description |
+|---------|-------------|
+| `{{buildCommand}}` | Build the project |
+{{/if}}

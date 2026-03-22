@@ -1,0 +1,44 @@
+---
+name: phase
+description: "Execute the current phase from the development plan step by step. Triggers on 'phase', 'next phase', 'run phase', 'execute phase'."
+---
+
+# /phase
+
+Execute the current development phase for {{projectName}}.
+
+## Steps
+
+1. **Read the plan**
+
+   Read `docs/development-plan.md` and find the first phase with status `Pending` or `In Progress`.
+
+   If all phases are `Done`, report that the plan is complete.
+
+2. **Break into tasks**
+
+   Decompose the phase into concrete tasks. Each task should be:
+   - Small enough to complete in one session
+   - Independently verifiable
+   - Assigned to the appropriate agent by domain
+
+   Present the task list and wait for confirmation.
+
+3. **Execute tasks**
+
+   For each confirmed task:
+   1. Identify which agent owns the domain
+   2. Execute the task within the agent's scope
+   3. Run the agent's verification commands
+   4. Mark the task as done
+
+4. **Update the plan**
+
+   After all tasks in the phase are complete:
+   - Update the phase status to `Done` in `docs/development-plan.md`
+   - Set the next phase to `In Progress`
+   - Report what was accomplished
+
+5. **Run /check**
+
+   After completing the phase, run `/check` to verify nothing is broken.

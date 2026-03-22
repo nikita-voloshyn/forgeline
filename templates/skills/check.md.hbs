@@ -1,0 +1,40 @@
+---
+name: check
+description: "Run the full quality pipeline: lint, typecheck, and tests. Triggers on 'check', 'run checks', 'quality check', 'ci check'."
+---
+
+# /check
+
+Run the full quality pipeline for {{projectName}}.
+
+## Steps
+
+1. **Lint**
+{{#if linter}}
+   Run: `{{linter.command}}`
+{{else}}
+   No linter configured. Skip this step.
+{{/if}}
+
+2. **Type Check**
+{{#if typeChecker}}
+   Run: `{{typeChecker.command}}`
+{{else}}
+   No type checker configured. Skip this step.
+{{/if}}
+
+3. **Tests**
+{{#if testRunner}}
+   Run: `{{testRunner.command}}`
+{{else}}
+   No test runner configured. Skip this step.
+{{/if}}
+
+4. **Report**
+
+   Summarize results:
+   - Lint: pass/fail + issue count
+   - Type check: pass/fail + error count
+   - Tests: pass/fail + test count
+
+   If any step fails, stop and report the failure. Do not proceed to the next step.

@@ -1,0 +1,68 @@
+---
+name: deploy-check
+description: "Pre-deployment audit: verify code quality, secrets, dependencies, and build. Triggers on 'deploy check', 'pre-deploy', 'deployment audit', 'ready to deploy'."
+---
+
+# /deploy-check
+
+Pre-deployment audit for {{projectName}}.
+
+## Steps
+
+1. **Run /check**
+
+   Execute the full quality pipeline first. If it fails, stop here.
+
+2. **Secrets scan**
+
+   Search for hardcoded secrets:
+
+   ```bash
+   grep -rn 'API_KEY\|SECRET\|PASSWORD\|PRIVATE_KEY\|Bearer ' --include='*.ts' --include='*.js' --include='*.py' --include='*.go' --include='*.rs' . | grep -v node_modules | grep -v '.env.example'
+   ```
+
+   Report any findings. If secrets are found, **stop and flag**.
+
+3. **Dependency audit**
+
+{{#if packageManager.auditCommand}}
+   Run: `{{packageManager.auditCommand}}`
+
+   Report any high or critical vulnerabilities.
+{{else}}
+   No package manager audit command configured. Check dependencies manually.
+{{/if}}
+
+4. **Build verification**
+
+{{#if buildCommand}}
+   Run: `{{buildCommand}}`
+
+   Confirm the build completes without errors.
+{{else}}
+   No build command configured. Skip this step.
+{{/if}}
+
+5. **Git status**
+
+   Run: `git status`
+
+   Verify:
+   - No uncommitted changes
+   - No untracked files that should be committed
+   - Branch is up to date with remote
+
+6. **Report**
+
+   Summarize the audit:
+
+   | Check | Status |
+   |-------|--------|
+   | Quality pipeline | Pass/Fail |
+   | Secrets scan | Clean/Found |
+   | Dependency audit | Clean/Vulnerabilities |
+   | Build | Pass/Fail/Skipped |
+   | Git status | Clean/Dirty |
+
+   If all checks pass: **Ready to deploy.**
+   If any check fails: **Not ready.** List what needs fixing.
