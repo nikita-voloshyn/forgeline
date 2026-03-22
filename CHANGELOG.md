@@ -13,4 +13,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Context7 integration for verifying framework best practices
 - MIT license and open-source project structure
 
-[Unreleased]: https://github.com/nikita-voloshyn/forgeline/compare/v0.1.0...HEAD
+[Unreleased]: https://github.com/nikita-voloshyn/forgeline/compare/v0.1.0-beta...HEAD
