@@ -1,4 +1,4 @@
-# DevForge — Design Spec
+# Forgeline — Design Spec
 
 **Date:** 2026-03-22
 **Status:** Approved
@@ -7,7 +7,7 @@
 
 ## Overview
 
-DevForge is a Claude Code plugin that scaffolds a complete multi-agent development system for any project. Given a project's vision and tech stack, it runs a structured 7-step configuration dialogue and generates a fully configured Claude Code workspace tailored to the detected stack.
+Forgeline is a Claude Code plugin that scaffolds a complete multi-agent development system for any project. Given a project's vision and tech stack, it runs a structured 7-step configuration dialogue and generates a fully configured Claude Code workspace tailored to the detected stack.
 
 ---
 
@@ -20,7 +20,7 @@ The `/setup-agents` skill handles the interactive dialogue with the developer. T
 ### Plugin Structure
 
 ```
-devforge/
+forgeline/
 ├── .claude-plugin/
 │   └── plugin.json              — plugin manifest
 ├── agents/
@@ -29,7 +29,7 @@ devforge/
 │   └── setup-agents/
 │       └── SKILL.md             — main skill, runs the dialogue
 ├── hooks/
-│   └── hooks.json               — devforge-internal hooks
+│   └── hooks.json               — forgeline-internal hooks
 ├── templates/                   — generation templates
 │   ├── CLAUDE.md.hbs
 │   ├── agent.md.hbs
@@ -48,7 +48,7 @@ devforge/
 ### Installation
 
 ```bash
-/plugin marketplace add nikita-voloshyn/devforge
+/plugin marketplace add nikita-voloshyn/forgeline
 ```
 
 ### Usage
