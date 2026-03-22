@@ -7,7 +7,7 @@
 
 > Scaffold a production-ready multi-agent development system for any project — from vision to a fully configured Claude Code workspace.
 >
-> **Beta:** Forgeline is under active development. The core dialogue and agent architecture are in place, but Handlebars templates are not yet implemented. Expect breaking changes before v1.0.
+> **Beta:** Forgeline is under active development. The core dialogue, agent architecture, and Handlebars templates are in place. Expect breaking changes before v1.0.
 
 ## What It Does
 
@@ -102,4 +102,4 @@ To report vulnerabilities, see [SECURITY.md](SECURITY.md).
 
 ## License
 
-MIT
+This project is licensed under the [MIT License](LICENSE).
