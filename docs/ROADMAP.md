@@ -1,11 +1,11 @@
 # Forgeline Roadmap
 
-**Current version:** 0.1.0-beta
-**Status:** Architecture and dialogue flow complete. Generation engine not yet functional.
+**Current version:** 0.2.0-beta
+**Status:** Architecture, dialogue flow, and generation engine complete. All 9 Handlebars templates functional.
 
 ---
 
-## v0.1.0-beta (current)
+## v0.1.0-beta
 
 - [x] Plugin scaffold (plugin.json, agents/, skills/, hooks/)
 - [x] `/setup-agents` skill — 7-step configuration dialogue
@@ -17,7 +17,7 @@
 
 ---
 
-## v0.2.0 — Generation Engine
+## v0.2.0-beta (current)
 
 **Goal:** Make the plugin actually generate files.
 

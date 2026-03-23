@@ -22,7 +22,8 @@ The `/setup-agents` skill handles the interactive dialogue with the developer. T
 ```
 forgeline/
 ├── .claude-plugin/
-│   └── plugin.json              — plugin manifest
+│   ├── plugin.json              — plugin manifest
+│   └── marketplace.json         — marketplace manifest (required for /plugin marketplace add)
 ├── agents/
 │   └── system-architect.md      — Opus 4.6, reads + generates
 ├── skills/

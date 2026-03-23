@@ -35,6 +35,7 @@ forgeline/
 ├── README.md
 ├── CONTRIBUTING.md
 ├── CHANGELOG.md
+├── TASKS.md                     — active roadmap items and task tracking
 ├── CODE_OF_CONDUCT.md
 ├── SECURITY.md
 └── LICENSE
