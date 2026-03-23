@@ -13,7 +13,7 @@ Currently phases and workflow are hardcoded. Need a new step in the dialogue whe
 - **YAGNI/KISS** — minimal solution, refactor only when a second similar case appears
 
 **Tasks:**
-- [ ] Add new step to `/setup-agents` dialogue (before current Step 2 — Agents)
+- [ ] Add new step to `/setup-agents` dialogue (before the Agents step)
 - [ ] Suggest approaches based on context (solo/team, project type)
 - [ ] Allow combining approaches (e.g. Shape Up + TDD)
 - [ ] Adapt generation output: phases, skills, hooks, commit templates — all depend on selected approach
@@ -27,7 +27,7 @@ Currently phases and workflow are hardcoded. Need a new step in the dialogue whe
 - [ ] Use SkillHub.club as catalog only (names, ratings, descriptions of top S/A-rank skills)
 - [ ] Pull actual skill code from GitHub (not via paid API)
 - [ ] Adapt found skills to the specific project (not copy as-is)
-- [ ] Add as optional step in dialogue (between Step 3 and Step 4)
+- [ ] Add as optional step in dialogue (between the Skills step and the Plugins step)
 
 ---
 
