@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.0-beta] — 2026-03-24
+
 ### Added
 - Task orchestration pipeline: `/plan` → `/dispatch` → `/execute` — 3 new skill templates
 - Dispatch agent template (`templates/agents/dispatch.md.hbs`) — task assignment agent generated per-project
@@ -45,6 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Removed `skills` field from `plugin.json` — auto-discovery at `skills/*/SKILL.md` works without it
 - Added `marketplace.json` to fix `/plugin marketplace add` failing silently
 
-[Unreleased]: https://github.com/nikita-voloshyn/forgeline/compare/v0.2.0-beta...HEAD
+[Unreleased]: https://github.com/nikita-voloshyn/forgeline/compare/v0.3.0-beta...HEAD
+[0.3.0-beta]: https://github.com/nikita-voloshyn/forgeline/compare/v0.2.0-beta...v0.3.0-beta
 [0.2.0-beta]: https://github.com/nikita-voloshyn/forgeline/compare/v0.1.0-beta...v0.2.0-beta
 [0.1.0-beta]: https://github.com/nikita-voloshyn/forgeline/releases/tag/v0.1.0-beta
