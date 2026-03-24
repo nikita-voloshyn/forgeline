@@ -1,6 +1,10 @@
 # {{projectName}} — Development Plan
 
-> Use `/phase` to execute phases step by step.
+> Use `/plan` to start a new feature, `/phase` for phase-level execution.
+
+{{#if approach}}
+**Development Approach:** {{approach}}
+{{/if}}
 
 ## Phases
 
@@ -19,5 +23,6 @@
 ## Notes
 
 - Update the **Status** column as you progress: `Pending` → `In Progress` → `Done`
-- Each phase can be broken into sub-tasks as needed
-- Use `/phase` skill to get guided execution for the current phase
+- Each phase can be broken into sub-tasks using `/plan`
+- Use `/phase` for phase-level execution, or `/plan` → `/dispatch` → `/execute` for feature-level orchestration
+- All feature plans and reports are saved in `docs/plans/`

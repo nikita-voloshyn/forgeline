@@ -39,21 +39,55 @@ Given a confirmed configuration from `/setup-agents`, generate the following in 
 └── settings.local.json      — allow permissions, MCP servers
 
 agents/
-└── <name>.md                — one per confirmed agent
+├── <name>.md                — one per confirmed domain agent
+└── dispatch.md              — task assignment agent (always generated)
 
 skills/
-└── <name>/
-    └── SKILL.md             — one per confirmed skill
+├── <name>/SKILL.md          — one per confirmed skill (standard set below)
+├── plan/SKILL.md            — planning session (always generated)
+├── dispatch/SKILL.md        — agent/skill assignment (always generated)
+└── execute/SKILL.md         — guided execution (always generated)
 
 hooks/
 └── hooks.json               — PostToolUse + Stop hooks
 
-CLAUDE.md                    — architecture rules tailored to the stack
+CLAUDE.md                    — architecture rules + approach section + workflow docs
 docs/
 ├── agentic-system.md        — full system documentation with Mermaid diagrams
-├── development-plan.md      — empty phase tracker
-└── commands.md              — command reference based on detected tooling
+├── development-plan.md      — phase tracker adapted to selected approach
+├── commands.md              — command reference based on detected tooling
+└── plans/                   — feature planning directory (empty at generation)
 ```
+
+### Orchestration Files
+
+The following files are always generated as part of the orchestration pipeline:
+
+1. **`agents/dispatch.md`** — Use `templates/agents/dispatch.md.hbs`. This agent handles task assignment for the `/dispatch` skill.
+
+2. **`skills/plan/SKILL.md`** — Use `templates/skills/plan.md.hbs`. Planning session skill.
+
+3. **`skills/dispatch/SKILL.md`** — Use `templates/skills/dispatch.md.hbs`. Agent/skill assignment skill.
+
+4. **`skills/execute/SKILL.md`** — Use `templates/skills/execute.md.hbs`. Guided execution skill.
+
+5. **`docs/plans/`** — Create this empty directory. It will hold plan, dispatch, and report files generated during feature development.
+
+### Approach Section in CLAUDE.md
+
+If the confirmed configuration includes an `approach` selection (from Step 2 of the dialogue):
+
+1. Read the corresponding approach template from `templates/approaches/<approach-slug>.md.hbs`
+2. Render it (minimal variables — mainly `{{projectName}}`)
+3. Pass the rendered content as `{{approachContent}}` to `templates/CLAUDE.md.hbs`
+4. The CLAUDE.md template includes a conditional block that inserts the approach section
+
+Approach slug mapping:
+- "Iterative + Timeboxing" → `iterative.md.hbs`
+- "Shape Up" → `shape-up.md.hbs`
+- "TDD-First" → `tdd.md.hbs`
+- "Trunk-Based" → `trunk-based.md.hbs`
+- "YAGNI/KISS" → `yagni.md.hbs`
 
 ## Agent File Format
 
@@ -217,7 +251,12 @@ Contains: allow permissions, MCP server configurations.
 
 ## Verification
 
-After generating all files, report:
+After generating all files, verify and report:
 - List of every file created with a one-line description
 - Context7 lookups performed and what they informed
 - Any decisions made during generation
+- `agents/dispatch.md` exists and follows the agent file format
+- `skills/plan/SKILL.md`, `skills/dispatch/SKILL.md`, `skills/execute/SKILL.md` exist
+- `docs/plans/` directory exists
+- If approach was selected: CLAUDE.md contains a "Development Approach" section
+- CLAUDE.md contains a "Development Workflow" section

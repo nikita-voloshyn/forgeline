@@ -1,0 +1,105 @@
+---
+name: plan
+description: "Plan a feature: decompose into tasks, assign domains, produce docs/plans/<feature>-plan.md. Use when starting new feature work."
+---
+
+# /plan
+
+Plan a new feature for {{projectName}}.
+
+## Steps
+
+1. **Gather feature description**
+
+   Ask the developer to describe the feature in natural language. Prompt:
+   > What feature would you like to plan? Describe it in a few sentences.
+
+   Wait for a response before proceeding.
+
+2. **Read project context**
+
+   Read the following files to understand current state:
+   - `CLAUDE.md` — architecture rules and approach
+   - `docs/agentic-system.md` — agent definitions and domains
+   - `docs/development-plan.md` — current phase and roadmap
+
+3. **Identify relevant agents**
+
+   From the agents list, identify which domains are involved:
+{{#each agents}}
+   - **{{displayName}}** (`{{name}}`) — domain: {{domain}}. Owns: {{#each owns}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}
+{{/each}}
+
+   Select only the agents whose domains overlap with the described feature.
+
+4. **Ask clarifying questions**
+
+   Before decomposing, ask the developer about:
+   - Scope boundaries — what is explicitly in and out
+   - Edge cases — error handling, empty states, migrations
+   - Dependencies — does this depend on other incomplete work
+   - Constraints — performance targets, compatibility requirements
+
+   Wait for answers before proceeding. Do not guess.
+
+5. **Propose task breakdown**
+
+   Decompose the feature into tasks. Each task must:
+   - Fit in a single Claude session
+   - Have exactly one domain owner (agent)
+   - Include clear acceptance criteria
+   - List explicit dependencies on other tasks (or "none")
+
+   Present the full breakdown as a table and wait for the developer to confirm or adjust.
+
+6. **Generate slug and write plan**
+
+   Generate a URL-safe slug from the feature name:
+   - Lowercase all characters
+   - Replace spaces with hyphens
+   - Remove all special characters (keep only `a-z`, `0-9`, `-`)
+   - Truncate to 40 characters maximum
+   - If `docs/plans/<slug>-plan.md` already exists, append `-2`, `-3`, etc.
+
+   Create the directory `docs/plans/` if it does not exist.
+
+   Write `docs/plans/<slug>-plan.md` using this format:
+
+   ```markdown
+   # Plan: <Feature Name>
+
+   **Date:** <YYYY-MM-DD>
+   **Author:** <developer> + <primary domain agent>
+{{#if approach}}
+   **Approach:** {{approach}}
+{{/if}}
+   **Phase:** <current phase from development-plan.md>
+
+   ## Goal
+   <1-2 sentences describing what this feature achieves>
+
+   ## Tasks
+   | # | Task | Domain | Depends on | Acceptance criteria |
+   |---|------|--------|------------|---------------------|
+   | 1 | ... | ... | none | ... |
+   | 2 | ... | ... | 1 | ... |
+
+   ## Risks
+   - <identified risks or unknowns>
+
+   ## Out of scope
+   - <items explicitly excluded>
+   ```
+
+7. **Confirm**
+
+   Print the path to the saved plan file and suggest running `/dispatch` next to assign agents and execution order.
+
+## Rules
+
+- Tasks must fit in one Claude session — if a task is too large, split it.
+- Each task has a single domain owner. If a task spans domains, split it.
+- Dependencies must be explicit. Use task numbers, not descriptions.
+- The plan is human-readable documentation, not machine-parseable config.
+- Never proceed past step 1 without a feature description from the developer.
+- Never proceed past step 4 without answers to clarifying questions.

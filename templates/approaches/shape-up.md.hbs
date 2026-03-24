@@ -1,0 +1,23 @@
+### Development Approach: Shape Up
+
+**Philosophy:** 6-week build cycles, 2-week cooldown. Work on appetites (how much time we're willing to spend), not estimates.
+
+**Rules:**
+
+1. Phases are "bets" with an appetite (1w, 2w, or 6w). There is no infinite backlog — work that isn't bet on is discarded.
+2. When planning features (`/plan`), ask for appetite upfront: "How much time are we willing to spend on this?" The answer defines a hard ceiling, not a target.
+3. Prefer scope reduction over incomplete features. When work exceeds appetite, suggest scope cuts instead of timeline extensions. Never extend the timeline.
+4. Every bet must have a clear "hill chart" progression: unknown territory (uphill) → known territory (downhill). Tasks should be ordered so unknowns are resolved first.
+5. Cooldown periods (2 weeks between cycles) are for bug fixes, refactoring, and exploration — not feature work. Do not schedule feature bets during cooldown.
+
+**Phase structure in `development-plan.md`:**
+
+```
+| # | Bet                              | Status      | Appetite  |
+|---|----------------------------------|-------------|-----------|
+| 1 | Real-time notifications          | In Progress | 2 weeks   |
+| 2 | Advanced search                  | Pending     | 1 week    |
+| 3 | Cooldown: bug fixes & refactors  | Pending     | 2 weeks   |
+```
+
+**Scope hammering:** When a bet is running over appetite, do not ask for more time. Instead, list what can be cut or deferred to make the bet fit. The question is always "What can we drop?" — never "How much longer do we need?"

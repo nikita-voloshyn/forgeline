@@ -1,0 +1,23 @@
+### Development Approach: Iterative Delivery
+
+**Philosophy:** Ship working increments every 1–3 days. Each cycle has a tangible deliverable.
+
+**Rules:**
+
+1. Phases in `development-plan.md` are 1–3 day cycles, not milestones. Each phase name is a deliverable, not a category.
+2. When planning features (`/plan`), define a "done in N days" timebox for each task. Tasks that don't fit in 3 days must be split into smaller tasks.
+3. Execution reports must include cycle duration and whether the timebox was met.
+4. Prioritize shipping a working increment over perfection. A deployed feature with rough edges beats a polished feature in a branch.
+5. At the end of each cycle, the feature must be in a usable (even if incomplete) state. No cycle ends with broken or non-functional code.
+
+**Phase structure in `development-plan.md`:**
+
+```
+| # | Phase (Deliverable)              | Status  | Timebox |
+|---|----------------------------------|---------|---------|
+| 1 | Auth flow (login + signup)       | Pending | 2 days  |
+| 2 | Dashboard with data grid         | Pending | 3 days  |
+| 3 | User settings page               | Pending | 1 day   |
+```
+
+**How to split tasks:** If a task feels like it needs more than 3 days, ask: "What is the smallest slice that delivers value on its own?" Extract that slice as the current cycle and push the rest to subsequent cycles.
