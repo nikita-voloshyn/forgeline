@@ -1,0 +1,23 @@
+### Development Approach: YAGNI (You Aren't Gonna Need It)
+
+**Philosophy:** Build the minimum that works. Refactor only when a second similar case appears.
+
+**Rules:**
+
+1. Every task must justify why it cannot be simpler. Apply a "Do we really need this?" gate before starting any work.
+2. Prefer the simplest solution. Do not create abstractions, interfaces, or indirection for single use cases.
+3. Three similar lines of code is better than a premature abstraction. Extract a shared function only when the third instance appears.
+4. Flag tasks that look like premature abstraction or over-engineering. Examples: building a plugin system for one plugin, creating a config framework for three settings, adding an event bus for two events.
+5. Flag files over 300 lines or functions over 50 lines as potential complexity issues that need review.
+6. Do not design for hypothetical future requirements. Build for what is needed today. If a future requirement materializes, refactor then — not before.
+
+**Decision checklist before adding complexity:**
+
+```
+- Is this solving a problem we have right now? (not "might have")
+- Is there a simpler way to achieve the same result?
+- Would a new developer understand this without explanation?
+- Are we adding this because we need it or because it feels "correct"?
+```
+
+**When to refactor:** Refactor when you encounter the second real instance of a pattern — not the first, and not a hypothetical one. The rule of three applies: duplicate once is acceptable, duplicate twice means extract.

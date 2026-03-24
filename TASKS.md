@@ -7,51 +7,60 @@ Transparent workflow that automates repetitive instructions (split into subtasks
 
 **Flow:** `/plan` → `/dispatch` → developer review → `/execute` → report
 
+**Spec:** `docs/specs/2026-03-23-orchestration-design.md` (Approved v2)
+
 **New components:**
-- [ ] Dispatch agent template (`templates/agents/dispatch.md.hbs`) — "Tech lead" that translates human plan into machine-readable dispatch with agent/skill assignments per task
-- [ ] Documentation agent template (`templates/agents/docs.md.hbs`) — formats all plans and reports as clean markdown
-- [ ] `/plan` skill template (`templates/skills/plan.md.hbs`) — planning session: user + domain agent produce human-readable plan
-- [ ] `/dispatch` skill template (`templates/skills/dispatch.md.hbs`) — calls dispatch agent, produces dispatch plan, waits for developer approval
-- [ ] `/execute` skill template (`templates/skills/execute.md.hbs`) — runs approved dispatch plan task by task, produces execution report
-- [ ] Plan markdown templates (`templates/plans/`) — Handlebars templates for plan, dispatch, and report files
-- [ ] Approach config templates (`templates/approaches/`) — per methodology (Shape Up, Iterative, TDD, etc.)
+- [ ] Dispatch agent template (`templates/agents/dispatch.md.hbs`) — assigns agents/skills to plan tasks
+- [ ] `/plan` skill template (`templates/skills/plan.md.hbs`) — planning session with embedded output format
+- [ ] `/dispatch` skill template (`templates/skills/dispatch.md.hbs`) — agent assignment with embedded output format
+- [ ] `/execute` skill template (`templates/skills/execute.md.hbs`) — guided execution with resume mechanism and embedded report format
+- [ ] Approach content templates (`templates/approaches/*.md.hbs` x5) — CLAUDE.md section content per methodology
 
 **Modified components:**
-- [ ] Refactor `templates/skills/phase.md.hbs` to use /plan → /dispatch → /execute flow
-- [ ] Update `skills/setup-agents/SKILL.md` — add dev approach selection step + new skills to standard set
-- [ ] Update `agents/system-architect.md` — generate dispatch agent, docs agent, new skills
-- [ ] Update `templates/CLAUDE.md.hbs` — add workflow docs for plan → dispatch → execute lifecycle
-- [ ] Update `templates/agentic-system.md.hbs` — add orchestration diagram
+- [ ] Refactor `templates/skills/phase.md.hbs` — backward-compat wrapper redirecting to /plan
+- [ ] Update `skills/setup-agents/SKILL.md` — add Step 2 (approach, single-select) + new skills to standard set (7 total)
+- [ ] Update `agents/system-architect.md` — generate dispatch agent, new skills, approach section in CLAUDE.md
+- [ ] Update `templates/CLAUDE.md.hbs` — add approach section + workflow docs
+- [ ] Update `templates/agentic-system.md.hbs` — add dispatch agent, workflow diagram, new skills
+- [ ] Update `templates/development-plan.md.hbs` — approach-adapted phase structure
+- [ ] Update `templates/commands.md.hbs` — add /plan, /dispatch, /execute
 
 **Generated output in target project:**
 ```
-docs/plans/
-├── <feature>-plan.md          ← human-readable plan
-├── <feature>-dispatch.md      ← agent/skill assignments per task
-└── <feature>-report.md        ← execution report with analysis
+agents/dispatch.md                  ← task assignment agent
+skills/{plan,dispatch,execute}/     ← 3 new skills
+CLAUDE.md                           ← +approach section, +workflow section
+docs/plans/                         ← feature planning directory
+  ├── <feature>-plan.md             ← human-readable plan
+  ├── <feature>-dispatch.md         ← agent assignments (with per-task Status)
+  └── <feature>-report.md           ← execution report
 ```
-
-**Full plan:** `.claude/plans/concurrent-wondering-phoenix.md`
 
 ---
 
 ### Development Approach Layer (New Step in Dialogue)
-Currently phases and workflow are hardcoded. Need a new step in the dialogue where the user selects a development approach, and generation adapts accordingly.
+Currently phases and workflow are hardcoded. New Step 2 in dialogue where the user selects a development approach. Approach generates a section in CLAUDE.md that Claude naturally follows.
 
-**Available approaches:**
+**Available approaches (single-select for v0.3):**
 - **Iterative + Timeboxing** — short 1-3 day cycles, working result at the end of each
-- **Shape Up** — 6-week cycles + 2 weeks cooldown, appetite instead of estimates, pitches instead of backlog
-- **TDD-first** — tests as a replacement for code review, critical business logic always covered
-- **Trunk-Based** — single main branch, daily commits, branches only for features > 1 day, feature flags
+- **Shape Up** — 6-week cycles + 2 weeks cooldown, appetite instead of estimates
+- **TDD-First** — tests written before implementation, coverage as quality signal
+- **Trunk-Based** — single main branch, daily commits, feature flags for WIP
 - **YAGNI/KISS** — minimal solution, refactor only when a second similar case appears
 
 **Tasks:**
-- [ ] Add new step to `/setup-agents` dialogue (before the Agents step)
-- [ ] Suggest approaches based on context (solo/team, project type)
-- [ ] Allow combining approaches (e.g. Shape Up + TDD)
-- [ ] Adapt generation output: phases, skills, hooks, commit templates — all depend on selected approach
-- [ ] Remove hardcoded phases from current templates
-- [ ] Save research as `docs/specs/development-approaches.md`
+- [ ] Add Step 2 to `/setup-agents` dialogue (before Agents step, single-select)
+- [ ] Suggest one approach based on context (solo/team, project type)
+- [ ] Create 5 approach content templates (`templates/approaches/`)
+- [ ] Adapt `CLAUDE.md.hbs` to include approach section via `{{approachContent}}`
+- [ ] Adapt `development-plan.md.hbs` phase structure per approach
+
+---
+
+### Documentation & Architecture Update
+- [ ] Update README.md architecture diagram to reflect new dialogue steps and orchestration flow
+- [ ] Update CHANGELOG.md with new features
+- [ ] Update CLAUDE.md project structure if needed
 
 ---
 
@@ -62,17 +71,13 @@ Currently phases and workflow are hardcoded. Need a new step in the dialogue whe
 - [ ] Adapt found skills to the specific project (not copy as-is)
 - [ ] Add as optional step in dialogue (between the Skills step and the Plugins step)
 
----
-
-### Documentation & Architecture Update
-- [ ] Update README.md architecture diagram to reflect new dialogue steps and orchestration flow
-- [ ] Update design spec (`docs/specs/2026-03-22-forgeline-design.md`) with orchestration system and dev approach step
-- [ ] Update CLAUDE.md if architecture rules change
-- [ ] Update CHANGELOG.md with new features
-
 ## Backlog
 
-_(empty)_
+### Deferred to v0.4
+- [ ] Documentation agent (`agents/docs.md`) — dedicated agent for system docs and diagrams
+- [ ] `/setup-approach` skill — standalone approach reconfiguration without re-running /setup-agents
+- [ ] Multi-approach composition — selecting 2-3 approaches with conflict resolution
+- [ ] Custom approach (free text) — describe methodology, system architect extracts config
 
 ## Done
 

@@ -1,0 +1,129 @@
+---
+name: dispatch
+description: "Assign agents and skills to a plan's tasks, producing docs/plans/<feature>-dispatch.md. Run after /plan."
+---
+
+# /dispatch
+
+Assign agents and execution order for a planned feature in {{projectName}}.
+
+## Steps
+
+1. **Find plan files**
+
+   List files in `docs/plans/` matching `*-plan.md`.
+
+   - If none found: tell the developer no plans exist and suggest running `/plan` first. Stop.
+   - If exactly one found: use it.
+   - If multiple found: list them and ask the developer which plan to dispatch. Wait for a response.
+
+2. **Read the plan**
+
+   Read the selected plan file. Extract the task table, dependencies, and domain assignments.
+
+3. **Read agent capabilities**
+
+   Read `docs/agentic-system.md` for the full agent roster and their capabilities.
+
+   Available agents:
+{{#each agents}}
+   - **{{displayName}}** (`{{name}}`) — domain: {{domain}}
+     - Owns: {{#each owns}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}
+     - Forbidden: {{#each forbidden}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}
+     {{#if verification}}- Verification: {{#each verification}}`{{this}}`{{#unless @last}}, {{/unless}}{{/each}}{{/if}}
+{{/each}}
+
+4. **Read dispatch directives**
+
+   Read `agents/dispatch.md` and follow its directives for assignment logic and conflict resolution.
+
+5. **Assign agents and skills**
+
+   For each task in the plan:
+   - Assign an agent based on domain match. The agent's `owns` list must cover the task's domain.
+   - Assign pre-skills: procedures to run before the task (e.g., reading relevant files, checking prerequisites).
+   - Assign post-skills: procedures to run after the task (e.g., running verification commands, updating status).
+   - If domain assignment is ambiguous, flag it for developer review.
+
+   Available skills for assignment:
+{{#each skills}}
+   - `/{{name}}` — {{description}}
+{{/each}}
+
+6. **Group tasks by dependency level**
+
+   Organize tasks into execution groups:
+   - **Group 1**: tasks with no dependencies (can run independently)
+   - **Group 2**: tasks that depend only on Group 1 tasks
+   - **Group N**: tasks that depend only on tasks in earlier groups
+
+7. **Present for review**
+
+   Show the full assignment table to the developer:
+
+   ```
+   Group 1 (independent)
+   | Task | Agent | Pre-skills | Post-skills | Status |
+   |------|-------|------------|-------------|--------|
+
+   Group 2 (after Group 1)
+   | Task | Agent | Pre-skills | Post-skills | Status |
+   |------|-------|------------|-------------|--------|
+   ```
+
+   All tasks start with Status: `Pending`.
+
+8. **GATE: Wait for approval**
+
+   Ask the developer to review the assignments. They may:
+   - Approve as-is
+   - Reassign any task to a different agent
+   - Add or remove pre/post-skills
+   - Reorder groups
+
+   Do not proceed until the developer explicitly approves. This is a hard gate.
+
+9. **Save dispatch file**
+
+   On approval, derive the slug from the plan filename (e.g., `my-feature-plan.md` becomes `my-feature`).
+
+   Write `docs/plans/<slug>-dispatch.md` using this format:
+
+   ```markdown
+   # Dispatch: <Feature Name>
+
+   **Plan:** `<slug>-plan.md`
+   **Date:** <YYYY-MM-DD>
+   **Status:** Approved
+
+   ## Execution Order
+
+   ### Group 1 (independent)
+
+   | Task | Agent | Pre-skills | Post-skills | Status |
+   |------|-------|------------|-------------|--------|
+   | ... | ... | ... | ... | Pending |
+
+   ### Group 2 (after Group 1)
+
+   | Task | Agent | Pre-skills | Post-skills | Status |
+   |------|-------|------------|-------------|--------|
+   | ... | ... | ... | ... | Pending |
+
+   ## Notes
+   - <reasoning for non-obvious agent assignments>
+   - <any flagged ambiguities and how they were resolved>
+   ```
+
+10. **Confirm**
+
+    Print the path to the saved dispatch file and suggest running `/execute` next.
+
+## Rules
+
+- Never modify the plan file — the dispatch only adds execution metadata.
+- Flag ambiguous assignments for the developer instead of guessing.
+- All tasks start with Status: `Pending`. No other initial status is valid.
+- Groups define dependency order, not parallelism. Claude runs one session at a time.
+- An agent must never be assigned a task outside its `owns` list.
+- An agent must never touch files in its `forbidden` list.

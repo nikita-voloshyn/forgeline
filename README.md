@@ -14,7 +14,9 @@
 Forgeline reads your project's `vision.md` and `tech-stack.md` (or falls back to `README.md`, `package.json`, `Cargo.toml`, etc.), runs a detailed interactive dialogue, and generates a complete agent system tailored to your stack:
 
 - Specialized agents with strict domain boundaries
-- Custom skills (`/check`, `/changelog`, `/phase`, `/deploy-check`, and more)
+- Custom skills (`/check`, `/changelog`, `/phase`, `/deploy-check`, `/plan`, `/dispatch`, `/execute`, and more)
+- Task orchestration pipeline: `/plan` → `/dispatch` → `/execute` for structured feature development
+- Development approach selection (Iterative, Shape Up, TDD, Trunk-Based, YAGNI)
 - Plugins configured for your tech stack (Context7 always included)
 - Hooks for auto-linting and safety scans
 - Permissions pre-configured (allow + deny)
@@ -27,7 +29,7 @@ Forgeline follows a strict **skill + agent** separation:
 ```mermaid
 flowchart LR
     User -->|/setup-agents| Skill[Setup Agents Skill]
-    Skill -->|7-step dialogue| User
+    Skill -->|8-step dialogue| User
     Skill -->|confirmed config| Agent[System Architect Agent]
     Agent -->|Context7| C7[Best Practices]
     Agent -->|templates/| Templates[Handlebars Templates]
@@ -54,7 +56,15 @@ Navigate to any project and run:
 /setup-agents
 ```
 
-Forgeline will read your project, walk you through a 7-step configuration dialogue, and generate the full agent system in place.
+Forgeline will read your project, walk you through an 8-step configuration dialogue, and generate the full agent system in place.
+
+After setup, use the orchestration pipeline for feature development:
+
+```bash
+/plan       # Decompose a feature into tasks
+/dispatch   # Assign agents to tasks, review and approve
+/execute    # Execute tasks one by one with verification
+```
 
 ## Input Files
 
@@ -70,27 +80,33 @@ Forgeline will read your project, walk you through a 7-step configuration dialog
 ├── settings.json        — plugins, hooks, deny permissions
 └── settings.local.json  — allow permissions, MCP servers
 
-agents/*.md              — one file per agent
-skills/*/SKILL.md        — selected skills
+agents/
+├── *.md                 — domain agents (backend, frontend, testing, etc.)
+└── dispatch.md          — task assignment agent
 
-CLAUDE.md                — architecture rules for your stack
+skills/*/SKILL.md        — /check, /changelog, /phase, /deploy-check,
+                            /plan, /dispatch, /execute, + stack-specific
+
+CLAUDE.md                — architecture rules + approach + workflow
 docs/
 ├── agentic-system.md    — full system documentation with diagrams
-├── development-plan.md  — phase tracker
-└── commands.md          — command reference
+├── development-plan.md  — phase tracker (approach-adapted)
+├── commands.md          — command reference
+└── plans/               — feature plans, dispatches, and reports
 ```
 
 ## Configuration Dialogue
 
-Forgeline walks you through 7 steps before generating anything:
+Forgeline walks you through 8 steps before generating anything:
 
 1. **Project understanding** — confirms what it read from your files
-2. **Agents** — proposes agents based on your stack, you adjust
-3. **Skills** — standard set + stack-specific additions
-4. **Plugins** — Context7 always on, others recommended by stack
-5. **Hooks** — PostToolUse linting + Stop safety scan
-6. **Permissions** — allow/deny pre-filled, you extend
-7. **Final confirmation** — full summary before generation
+2. **Development approach** — select a methodology (Iterative, Shape Up, TDD, Trunk-Based, YAGNI)
+3. **Agents** — proposes agents based on your stack, you adjust
+4. **Skills** — standard set (7 skills) + stack-specific additions
+5. **Plugins** — Context7 always on, others recommended by stack
+6. **Hooks** — PostToolUse linting + Stop safety scan
+7. **Permissions** — allow/deny pre-filled, you extend
+8. **Final confirmation** — full summary before generation
 
 ## Contributing
 

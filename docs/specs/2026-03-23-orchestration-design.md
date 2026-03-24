@@ -1,7 +1,8 @@
 # Forgeline — Post-Setup Orchestration & Development Approach
 
 **Date:** 2026-03-23
-**Status:** Draft
+**Updated:** 2026-03-24
+**Status:** Approved (v2 — revised after architectural review)
 **Depends on:** [Forgeline Design Spec (2026-03-22)](2026-03-22-forgeline-design.md)
 
 ---
@@ -22,7 +23,7 @@ After `/setup-agents` generates the workspace, the developer is left with agents
 Two new systems that work together:
 
 1. **Task Orchestration** — a 3-skill pipeline (`/plan` → `/dispatch` → `/execute`) that structures feature development into plan → assign → run → report
-2. **Development Approach Layer** — a new step in the `/setup-agents` dialogue that lets the user pick a methodology, adapting all generated output
+2. **Development Approach Layer** — a new step in the `/setup-agents` dialogue that lets the user pick a methodology, generating approach-specific rules in CLAUDE.md
 
 ```mermaid
 flowchart LR
@@ -44,6 +45,14 @@ flowchart LR
     Setup --> Cycle
 ```
 
+### How Skills and Agents Work in Claude Code
+
+> **Important context for reading this spec.** Claude Code runs a single session at a time. When this spec says a skill "follows the dispatch agent's directives," it means Claude — within the same session — reads the agent definition file and follows its instructions. There is no separate process, no inter-process communication, and no automatic model switching. Each skill is a separate user-initiated command (`/plan`, `/dispatch`, `/execute`). The pipeline is a recommended manual workflow, not an automated chain.
+>
+> Similarly, when a skill references running another skill's procedure (e.g., "follow `/check` procedure"), this means executing those steps inline within the current session, not invoking a separate skill.
+>
+> The `model` field in agent definitions is a recommendation for which model to use when working with that agent, not a runtime directive. The actual model is determined by the user's session configuration.
+
 ---
 
 ## Part 1: Task Orchestration System
@@ -57,11 +66,12 @@ flowchart LR
 ```
 /plan                    /dispatch                  /execute
 ┌──────────────┐        ┌──────────────┐           ┌──────────────┐
-│ User + Agent │───────▶│ Dispatch     │──review──▶│ Task-by-task │
-│ create plan  │        │ Agent assigns│           │ execution    │
-│              │        │ agents/skills│           │              │
-│ Output:      │        │ Output:      │           │ Output:      │
-│ plan.md      │        │ dispatch.md  │           │ report.md    │
+│ User + Claude│───────▶│ Claude reads │──review──▶│ Task-by-task │
+│ create plan  │        │ dispatch     │           │ execution    │
+│              │        │ agent def,   │           │              │
+│ Output:      │        │ assigns tasks│           │ Output:      │
+│ plan.md      │        │ Output:      │           │ report.md    │
+│              │        │ dispatch.md  │           │              │
 └──────────────┘        └──────────────┘           └──────────────┘
 ```
 
@@ -69,26 +79,27 @@ flowchart LR
 
 ### `/plan` — Planning Session
 
-**Purpose:** User and a domain agent collaborate to produce a human-readable feature plan.
+**Purpose:** User and Claude (following domain agent directives) collaborate to produce a human-readable feature plan.
 
 **Input:** Feature description (free text from developer)
 
 **Process:**
 
 1. Read project context:
-   - `CLAUDE.md` — architecture rules and constraints
+   - `CLAUDE.md` — architecture rules, constraints, and development approach
    - `docs/agentic-system.md` — available agents and their domains
    - `docs/development-plan.md` — current phase and progress
-   - Selected development approach config (if present)
 
-2. Identify the relevant domain agent based on feature scope (e.g., backend feature → backend agent, full-stack → multiple agents listed)
+2. Identify the relevant domain agent based on feature scope (e.g., backend feature → read backend agent definition, full-stack → multiple agents listed)
 
 3. Collaboratively decompose the feature:
    - Ask clarifying questions about scope, edge cases, dependencies
    - Propose task breakdown
    - User confirms or adjusts
 
-4. Write the plan to `docs/plans/<feature-slug>-plan.md`
+4. Generate a URL-safe slug from the feature name: lowercase, replace spaces with hyphens, remove special characters, truncate to 40 characters. If a file with that slug already exists in `docs/plans/`, append `-2`, `-3`, etc.
+
+5. Write the plan to `docs/plans/<feature-slug>-plan.md`
 
 **Output format:**
 
@@ -126,7 +137,7 @@ flowchart LR
 - Tasks must be small enough to complete in one Claude session
 - Each task has a single domain owner (maps to one agent)
 - Dependencies are explicit — no implicit ordering
-- The approach config influences task structure (see Part 2)
+- The approach rules in CLAUDE.md naturally influence how Claude structures tasks
 
 ---
 
@@ -134,30 +145,29 @@ flowchart LR
 
 **Purpose:** Translate the human plan into a machine-readable dispatch with concrete agent and skill assignments.
 
-**Input:** An existing `<feature>-plan.md` file
+**Input:** An existing `<feature>-plan.md` file. If multiple plan files exist in `docs/plans/`, present a list and ask the developer which one to dispatch.
 
 **Process:**
 
 1. Read the plan from `docs/plans/<feature>-plan.md`
 
 2. Read system capabilities:
-   - `docs/agentic-system.md` — agent names, domains, models, verification commands
+   - `docs/agentic-system.md` — agent names, domains, verification commands
    - Available skills and their triggers
 
-3. Delegate to the **dispatch agent** (see New Agents below)
+3. Follow the **dispatch agent's directives** (read `agents/dispatch.md` and apply its rules within the current session)
 
-4. Dispatch agent produces assignments:
+4. Produce assignments:
    - For each task: which agent executes, which skills run before/after
    - Execution order respecting dependencies from the plan
-   - Parallel groups — tasks with no mutual dependencies that can run simultaneously
-   - Estimated model usage (Opus vs Sonnet per task)
+   - Independent groups — tasks with no mutual dependencies that can be executed in any order within the group
 
 5. **GATE: Present dispatch for developer review**
    - Show the full assignment table
    - Highlight any decisions that need human input (ambiguous domain, conflicting dependencies)
    - Wait for explicit approval
 
-6. On approval: save to `docs/plans/<feature>-dispatch.md`
+6. On approval: save to `docs/plans/<feature-slug>-dispatch.md`
 
 **Output format:**
 
@@ -170,36 +180,37 @@ flowchart LR
 
 ## Execution Order
 
-### Group 1 (parallel)
+### Group 1 (independent)
 
-| Task | Agent | Model | Pre-skills | Post-skills | Est. tokens |
-|------|-------|-------|------------|-------------|-------------|
-| 1. Setup DB schema | backend | opus | — | /check | ~5k |
-| 2. Create API types | backend | opus | — | — | ~3k |
+| Task | Agent | Pre-skills | Post-skills | Status |
+|------|-------|------------|-------------|--------|
+| 1. Setup DB schema | backend | — | /check | Pending |
+| 2. Create API types | backend | — | — | Pending |
 
 ### Group 2 (after Group 1)
 
-| Task | Agent | Model | Pre-skills | Post-skills | Est. tokens |
-|------|-------|-------|------------|-------------|-------------|
-| 3. Implement endpoints | backend | opus | — | /check | ~10k |
-| 4. Frontend components | frontend | sonnet | — | /check | ~8k |
+| Task | Agent | Pre-skills | Post-skills | Status |
+|------|-------|------------|-------------|--------|
+| 3. Implement endpoints | backend | — | /check | Pending |
+| 4. Frontend components | frontend | — | /check | Pending |
 
 ### Group 3 (after Group 2)
 
-| Task | Agent | Model | Pre-skills | Post-skills | Est. tokens |
-|------|-------|-------|------------|-------------|-------------|
-| 5. Integration tests | testing | sonnet | — | /check | ~6k |
+| Task | Agent | Pre-skills | Post-skills | Status |
+|------|-------|------------|-------------|--------|
+| 5. Integration tests | testing | — | /check | Pending |
 
 ## Notes
 
-- <dispatch agent's reasoning for non-obvious assignments>
+- <reasoning for non-obvious assignments>
 ```
 
 **Key rules:**
-- Dispatch agent NEVER modifies the plan — it only assigns executors
-- If a task doesn't map cleanly to one agent, dispatch agent flags it for the developer
-- Groups define parallelism: tasks in the same group have no dependencies on each other
+- The dispatch NEVER modifies the plan — it only assigns executors
+- If a task doesn't map cleanly to one agent, the dispatch flags it for the developer
+- Groups define independence: tasks in the same group have no dependencies on each other
 - Developer can reassign any task before approving
+- All tasks start with `Status: Pending`
 
 ---
 
@@ -212,28 +223,34 @@ flowchart LR
 **Process:**
 
 1. Read dispatch from `docs/plans/<feature>-dispatch.md`
-2. Verify status is `Approved` — refuse to run `Pending` dispatches
+2. Verify dispatch-level status is `Approved` — refuse to run `Pending` dispatches
 
-3. Execute groups in order:
+3. **Resume mechanism:** Scan task statuses in the dispatch file. Find the first task with status `Pending` or `In Progress`. If all tasks are `Done`/`Skipped`, skip to step 5 (quality check + report).
+
+4. Execute groups in order:
    ```
    For each group:
      For each task in group:
-       1. Log: "Starting task N: <description>"
-       2. Run pre-skills (if any)
-       3. Invoke the assigned agent within its domain scope
-       4. Agent performs the work and runs its own verification
-       5. Run post-skills (if any)
-       6. Record: status (done/failed), files changed, verification output
-       7. If failed → STOP, report failure, ask developer how to proceed:
-          - Retry the task
-          - Skip and continue
-          - Abort execution
+       1. Update task status to "In Progress" in dispatch file
+       2. Log: "Starting task N: <description>"
+       3. Follow pre-skill procedures inline (if any)
+       4. Read the assigned agent's definition and follow its directives
+       5. Perform the work and run verification commands from agent definition
+       6. Follow post-skill procedures inline (if any)
+       7. Update task status to "Done" in dispatch file
+       8. Record: files changed, verification output
+       9. If failed:
+          - Update task status to "Failed" in dispatch file
+          - STOP, report failure, ask developer how to proceed:
+            - Retry the task (reset status to Pending)
+            - Skip and continue (update status to Skipped)
+            - Abort execution
    ```
 
-4. After all tasks complete:
-   - Run `/check` (full quality pipeline)
+5. After all tasks complete:
+   - Follow `/check` procedure inline (full quality pipeline: lint + types + tests)
    - Generate execution report
-   - Save to `docs/plans/<feature>-report.md`
+   - Save to `docs/plans/<feature-slug>-report.md`
 
 **Output format:**
 
@@ -252,7 +269,7 @@ flowchart LR
 | 1 | Setup DB schema | backend | Done | 2 | — |
 | 2 | Create API types | backend | Done | 1 | — |
 | 3 | Implement endpoints | backend | Done | 3 | Added validation |
-| 4 | Frontend components | frontend | Done | 4 | — |
+| 4 | Frontend components | frontend | Skipped | 0 | Blocked by missing design |
 | 5 | Integration tests | testing | Done | 2 | 12 tests added |
 
 ## Quality Check
@@ -271,20 +288,21 @@ flowchart LR
 ```
 
 **Key rules:**
-- Execution is sequential within groups, parallel groups execute in order (not concurrently — Claude Code runs one session)
+- Execution is sequential — groups execute in order, tasks within a group execute one at a time (Claude Code runs one session)
 - Every task records what files it changed — this is the audit trail
 - Failed tasks do NOT automatically retry — developer decides
+- Task status is persisted in the dispatch file, enabling resume across sessions
 - The report is the single source of truth for what happened
 
 ---
 
-### New Agents (Generated in Target Project)
+### New Agent (Generated in Target Project)
 
 #### Dispatch Agent
 
 ```yaml
 name: dispatch
-model: claude-sonnet-4-6
+model: claude-sonnet-4-6  # recommendation — actual model depends on session
 domain: "Task assignment and execution planning"
 ```
 
@@ -298,26 +316,7 @@ domain: "Task assignment and execution planning"
 **Owns:** `docs/plans/*-dispatch.md`
 **Forbidden from:** source code, configs, agent definitions
 
-**Why Sonnet:** This is a routing/coordination task, not safety-critical generation. Speed matters more than depth.
-
-#### Documentation Agent
-
-```yaml
-name: docs
-model: claude-sonnet-4-6
-domain: "Plan and report formatting, system documentation"
-```
-
-**Core Directives:**
-1. Format all plans and reports as clean, consistent markdown
-2. Maintain `docs/agentic-system.md` when the system changes
-3. Generate Mermaid diagrams for architecture visualization
-4. Never modify source code or configuration
-
-**Owns:** `docs/plans/`, `docs/agentic-system.md`, `docs/commands.md`
-**Forbidden from:** source code, agents/, skills/, .claude/
-
-**Why Sonnet:** Documentation is high-iteration, not safety-critical.
+> **Note:** The dispatch agent's behavior is also defined by the `/dispatch` skill template. The agent definition provides identity and constraints; the skill provides the workflow.
 
 ---
 
@@ -326,26 +325,29 @@ domain: "Plan and report formatting, system documentation"
 ```
 templates/
 ├── agents/
-│   ├── dispatch.md.hbs          — dispatch agent definition
-│   └── docs.md.hbs              — documentation agent definition
+│   └── dispatch.md.hbs          — dispatch agent definition
 ├── skills/
-│   ├── plan.md.hbs              — /plan skill
-│   ├── dispatch.md.hbs          — /dispatch skill
-│   └── execute.md.hbs           — /execute skill
-└── plans/
-    ├── plan.md.hbs              — plan document format
-    ├── dispatch.md.hbs          — dispatch document format
-    └── report.md.hbs            — execution report format
+│   ├── plan.md.hbs              — /plan skill (output format embedded)
+│   ├── dispatch.md.hbs          — /dispatch skill (output format embedded)
+│   └── execute.md.hbs           — /execute skill (output format embedded)
+└── approaches/
+    ├── iterative.md.hbs         — CLAUDE.md section content
+    ├── shape-up.md.hbs          — CLAUDE.md section content
+    ├── tdd.md.hbs               — CLAUDE.md section content
+    ├── trunk-based.md.hbs       — CLAUDE.md section content
+    └── yagni.md.hbs             — CLAUDE.md section content
 ```
+
+> **Design decision:** Plan, dispatch, and report output formats are embedded directly in the skill templates, not stored as separate `templates/plans/*.hbs` files. This is because skills in the target project cannot access Forgeline's template directory at runtime. The system-architect renders the skill templates during generation, and the output formats become part of the generated skill files.
 
 **Template variables (new):**
 
 | Variable | Source | Used in |
 |----------|--------|---------|
-| `{{approach}}` | Step 2 dialogue | plan.md.hbs, skills |
-| `{{approachConfig}}` | approach template | plan, dispatch, execute skills |
-| `{{dispatchAgent}}` | auto-generated | dispatch.md.hbs |
-| `{{docsAgent}}` | auto-generated | docs.md.hbs |
+| `{{approach}}` | Step 2 dialogue | CLAUDE.md.hbs, development-plan.md.hbs, plan.md.hbs |
+| `{{approachContent}}` | rendered approach template | CLAUDE.md.hbs |
+
+> **Note:** The dispatch agent is included in the standard `{{agents}}` array — no separate `{{dispatchAgent}}` variable is needed.
 
 ---
 
@@ -353,12 +355,12 @@ templates/
 
 ```
 docs/
-├── agentic-system.md            — updated with dispatch + docs agents
+├── agentic-system.md            — updated with dispatch agent
 ├── development-plan.md          — adapted to selected approach
 ├── commands.md                  — updated with /plan, /dispatch, /execute
 └── plans/                       — NEW: feature planning directory
     ├── <feature>-plan.md        ← /plan output
-    ├── <feature>-dispatch.md    ← /dispatch output
+    ├── <feature>-dispatch.md    ← /dispatch output (with per-task Status)
     └── <feature>-report.md      ← /execute output
 ```
 
@@ -366,36 +368,39 @@ docs/
 
 ### Modified Existing Components
 
-#### `/phase` → superseded by `/plan` + `/dispatch` + `/execute`
+#### `/phase` → backward-compat wrapper
 
-The current `/phase` skill (linear executor) is replaced by the 3-skill pipeline. Migration:
+The current `/phase` skill (linear executor) is superseded by the 3-skill pipeline. Migration:
 
 - `phase.md.hbs` is refactored to become a thin wrapper:
-  1. If `docs/plans/` has a pending dispatch → run `/execute`
-  2. If no dispatch exists → prompt to run `/plan` first
-  3. Maintains backward compatibility for projects that haven't adopted orchestration
+  1. Check if `docs/plans/` exists and has files
+  2. If a pending dispatch exists → suggest running `/execute`
+  3. If no plans exist → suggest running `/plan` to start
+  4. If the project has no `docs/plans/` directory → execute the original linear phase logic (full backward compatibility)
 
 #### `setup-agents/SKILL.md`
 
-- Standard skill set expands: `/check`, `/changelog`, `/phase`, `/deploy-check` + **`/plan`, `/dispatch`, `/execute`**
-- Step 7 summary includes orchestration workflow description
-- System architect generates dispatch + docs agents alongside domain agents
+- Standard skill set expands: `/check`, `/changelog`, `/phase`, `/deploy-check` + **`/plan`, `/dispatch`, `/execute`** (7 skills total)
+- Step 8 summary includes orchestration workflow description
+- System architect generates dispatch agent alongside domain agents
 
 #### `system-architect.md`
 
-- Generation output adds `agents/dispatch.md`, `agents/docs.md`
+- Generation output adds `agents/dispatch.md`
 - Generation output adds 3 new skills
 - Generation output adds `docs/plans/` directory
+- Generation output adds approach section in CLAUDE.md (if approach selected)
 - Updated verification checklist includes orchestration files
 
 #### `agentic-system.md.hbs`
 
 - New section: "Development Workflow" with orchestration diagram
-- Dispatch and docs agents in the agents table
+- Dispatch agent in the agents table
 - `/plan`, `/dispatch`, `/execute` in the skills table
 
 #### `CLAUDE.md.hbs`
 
+- New conditional section: "Development Approach" with approach-specific rules (if approach selected)
 - New section: "Development Workflow" explaining the plan → dispatch → execute lifecycle
 - Reference to `docs/plans/` as the audit trail
 
@@ -405,7 +410,7 @@ The current `/phase` skill (linear executor) is replaced by the 3-skill pipeline
 
 ### Core Principle
 
-**The methodology shapes the output, not the process.** The 7-step dialogue (now 8-step) stays the same. The selected approach changes what gets generated — phases, skill behavior, hooks, and orchestration constraints.
+**The methodology shapes the output, not the process.** The 7-step dialogue (now 8-step) stays the same. The selected approach generates a "Development Approach" section in CLAUDE.md, which Claude naturally follows in every session. No template injection into agents, hooks, or skills required.
 
 ---
 
@@ -430,38 +435,36 @@ Step 8 — Final Confirmation           (was Step 7)
 
 1. Read project context from Step 1 (team size, project type, existing conventions)
 
-2. Suggest approaches based on context:
+2. Suggest one approach based on context:
 
    | Signal | Suggested approach |
    |--------|--------------------|
-   | Solo developer, small project | Iterative + YAGNI/KISS |
-   | Team project, existing CI/CD | Trunk-Based + TDD |
+   | Solo developer, small project | Iterative + Timeboxing |
+   | Team project, existing CI/CD | Trunk-Based |
    | Product with deadlines | Shape Up |
    | Greenfield, unclear scope | Iterative + Timeboxing |
-   | Library/OSS | TDD + Trunk-Based |
+   | Library/OSS | TDD-First |
 
-3. Present approaches with checkboxes — user can select 1-3 combinations
+3. Present all 5 approaches with descriptions — developer selects exactly one
 
-4. If combined approaches conflict (e.g., Shape Up's 6-week cycles + Iterative's 1-3 day cycles), ask user to resolve
+4. Save selection as `{{approach}}` in the confirmed configuration
 
-5. Save selection as `{{approach}}` in the confirmed configuration
+> **v0.3 scope:** Single-select only. Multi-approach composition (e.g., Iterative + TDD) is deferred to v0.4.
 
 ---
 
 ### Available Approaches
 
+Each approach generates a "Development Approach" section in the target project's CLAUDE.md. Claude reads CLAUDE.md at the start of every session and naturally follows the rules defined there.
+
 #### Iterative + Timeboxing
 
 **Philosophy:** Ship working increments every 1-3 days. Each cycle has a tangible deliverable.
 
-**Affects generation:**
-
-| Component | How it changes |
-|-----------|---------------|
-| `development-plan.md` | Phases are 1-3 day cycles, not milestones. Each phase name is a deliverable, not a category |
-| `/plan` skill | Plans must define a "done in N days" timebox. Tasks that don't fit get split |
-| `/execute` report | Includes cycle duration and whether timebox was met |
-| Hooks | No additional hooks |
+**CLAUDE.md rules:**
+- Phases in development-plan.md are 1-3 day cycles, not milestones. Each phase name is a deliverable, not a category.
+- When planning features (`/plan`), define a "done in N days" timebox for each task. Tasks that don't fit must be split.
+- Execution reports should include cycle duration and whether the timebox was met.
 
 **Phase structure example:**
 ```
@@ -474,14 +477,10 @@ Step 8 — Final Confirmation           (was Step 7)
 
 **Philosophy:** 6-week build cycles, 2-week cooldown. Work on appetites (how much time we're willing to spend), not estimates.
 
-**Affects generation:**
-
-| Component | How it changes |
-|-----------|---------------|
-| `development-plan.md` | Phases are "bets" with appetite (1w, 2w, 6w). No infinite backlog — unbet work is discarded |
-| `/plan` skill | Plans require an appetite declaration upfront. "How much are we willing to spend on this?" is asked before decomposition |
-| `/dispatch` skill | Dispatch agent flags tasks that exceed appetite. Suggests scope cuts instead of timeline extensions |
-| Agent directives | Agents are instructed to prefer scope reduction over incomplete features |
+**CLAUDE.md rules:**
+- Phases are "bets" with appetite (1w, 2w, 6w). No infinite backlog — unbet work is discarded.
+- When planning features (`/plan`), ask for appetite declaration upfront: "How much are we willing to spend on this?"
+- Prefer scope reduction over incomplete features. If a task exceeds appetite, suggest scope cuts instead of timeline extensions.
 
 **Phase structure example:**
 ```
@@ -494,15 +493,10 @@ Step 8 — Final Confirmation           (was Step 7)
 
 **Philosophy:** Tests are written before implementation. Test coverage is the primary quality signal.
 
-**Affects generation:**
-
-| Component | How it changes |
-|-----------|---------------|
-| `/plan` skill | Every task has an explicit "test first" subtask. Plan template adds a "Test strategy" section |
-| `/execute` skill | For each task: (1) write tests, (2) run tests (expect fail), (3) implement, (4) run tests (expect pass) |
-| `/check` skill | Adds coverage threshold check. Fails if coverage drops below configured minimum |
-| Hooks — PostToolUse | After implementation files are edited, immediately run related tests |
-| Agent directives | All domain agents get "Write tests before implementation" as directive #1 |
+**CLAUDE.md rules:**
+- Every feature task has an explicit "test first" step: write tests → run tests (expect fail) → implement → run tests (expect pass).
+- Plans should include a "Test Strategy" section defining test types and coverage targets per task.
+- Write tests before implementation — this is directive #1 for all work.
 
 **Plan format addition:**
 ```markdown
@@ -518,77 +512,39 @@ Step 8 — Final Confirmation           (was Step 7)
 
 **Philosophy:** Single main branch, short-lived feature branches (max 1 day), feature flags for WIP.
 
-**Affects generation:**
-
-| Component | How it changes |
-|-----------|---------------|
-| `/plan` skill | Tasks must be mergeable independently. No multi-day branches. Large features use feature flags |
-| `/execute` skill | After each task: commit + push. No batching of tasks into one commit |
-| Hooks — Stop | Checks for branches older than 1 day, warns developer |
-| Agent directives | Agents commit after each logical change, not at end of session |
-
-**Additional generated file:**
-```markdown
-# Feature Flags
-
-| Flag | Feature | Status | Cleanup date |
-|------|---------|--------|-------------|
-```
+**CLAUDE.md rules:**
+- Tasks must be mergeable independently. No multi-day branches. Large features use feature flags.
+- Commit after each logical change, not at end of session. After each completed task: commit and push.
+- Branches older than 1 day should be flagged for review.
 
 #### YAGNI/KISS
 
 **Philosophy:** Build the minimum that works. Refactor only when a second similar case appears.
 
-**Affects generation:**
-
-| Component | How it changes |
-|-----------|---------------|
-| `/plan` skill | Adds a mandatory "Do we really need this?" gate. Each task must justify why it can't be simpler |
-| `/dispatch` skill | Dispatch agent flags tasks that look like premature abstraction or over-engineering |
-| Agent directives | "Prefer the simplest solution. Do not create abstractions for single use cases" added to all agents |
-| `/check` skill | Adds a complexity scan — flags files over 300 lines or functions over 50 lines |
+**CLAUDE.md rules:**
+- Every task must justify why it can't be simpler. Apply a "Do we really need this?" gate.
+- Prefer the simplest solution. Do not create abstractions for single use cases.
+- Flag tasks that look like premature abstraction or over-engineering.
+- Flag files over 300 lines or functions over 50 lines as potential complexity issues.
 
 ---
 
-### How Approaches Combine
-
-Approaches are composable. Common combinations:
-
-| Combination | Resolution |
-|-------------|-----------|
-| Iterative + TDD | Short cycles with test-first. Each timebox includes test + implementation |
-| Shape Up + YAGNI | Bets with strict scope. Appetite naturally limits over-engineering |
-| Trunk-Based + TDD | Tests ensure main stays green. Feature flags protect WIP |
-| Iterative + Trunk-Based | Daily merges with cycle-level deliverables |
-
-**Conflict resolution:**
-- If two approaches define conflicting phase structures → Iterative/Shape Up wins (it defines the macro rhythm)
-- If two approaches define conflicting agent directives → both are included (they're additive)
-- If two approaches define conflicting hook behavior → skill asks developer to pick
-
----
-
-### Approach Config Templates
+### Approach Content Templates
 
 New directory in Forgeline:
 
 ```
 templates/approaches/
-├── iterative.md.hbs         — timebox config, cycle structure
-├── shape-up.md.hbs          — appetite config, bet structure
-├── tdd.md.hbs               — test-first rules, coverage thresholds
-├── trunk-based.md.hbs       — branch rules, commit frequency
-└── yagni.md.hbs             — simplicity rules, complexity thresholds
+├── iterative.md.hbs         — CLAUDE.md section: timebox rules
+├── shape-up.md.hbs          — CLAUDE.md section: appetite rules
+├── tdd.md.hbs               — CLAUDE.md section: test-first rules
+├── trunk-based.md.hbs       — CLAUDE.md section: branch rules
+└── yagni.md.hbs             — CLAUDE.md section: simplicity rules
 ```
 
-Each template defines:
-- Phase structure override
-- Additional agent directives (appended to generated agents)
-- Additional hook commands (appended to hooks.json)
-- Skill behavior modifications (conditional blocks in skill templates)
-- Plan/dispatch/report format additions
+Each template produces plain text content for a "Development Approach" section in the generated CLAUDE.md. The system-architect renders the selected approach template and injects the content into `CLAUDE.md.hbs` via the `{{approachContent}}` variable.
 
-**Template composition:** When multiple approaches are selected, the system-architect agent applies them in order: macro-level approach first (Iterative/Shape Up), then detail-level approaches (TDD, YAGNI, Trunk-Based).
+> **Why CLAUDE.md, not template injection?** Approaches could theoretically inject directives into each agent definition, add conditional hooks, and modify skill behavior. But this requires a complex composition mechanism at the Handlebars level that is not well-defined. Instead, CLAUDE.md is the natural place for project-wide rules — Claude reads it at the start of every session and follows it. Zero template composition complexity. The approach rules apply universally without per-file injection.
 
 ---
 
@@ -599,18 +555,16 @@ Step 1 — Project Understanding
   ↓
 Step 2 — Development Approach          ← NEW
   │  Present approach suggestions based on context
-  │  User selects 1-3 approaches
-  │  If conflicts → resolve with user
+  │  Developer selects one approach
   ↓
-Step 3 — Agents                         ← includes dispatch + docs agents
-  │  Approach may add directives to proposed agents
+Step 3 — Agents                         ← includes dispatch agent
   ↓
 Step 4 — Skills                         ← includes /plan, /dispatch, /execute
   │  Standard set now 7 skills instead of 4
   ↓
 Step 5 — Plugins                        (unchanged)
   ↓
-Step 6 — Hooks                          ← approach may add hooks
+Step 6 — Hooks                          (unchanged)
   ↓
 Step 7 — Permissions                    (unchanged)
   ↓
@@ -631,8 +585,7 @@ Done — workspace ready, developer runs /plan to start first feature
 
 agents/
 ├── <domain>.md                 — one per confirmed domain agent
-├── dispatch.md                 — task assignment agent (NEW)
-└── docs.md                     — documentation agent (NEW)
+└── dispatch.md                 — task assignment agent (NEW)
 
 skills/
 ├── check/SKILL.md              — quality pipeline
@@ -643,7 +596,7 @@ skills/
 ├── dispatch/SKILL.md           — agent/skill assignment (NEW)
 └── execute/SKILL.md            — guided execution (NEW)
 
-CLAUDE.md                       — architecture rules + workflow docs
+CLAUDE.md                       — architecture rules + approach section + workflow docs
 docs/
 ├── agentic-system.md           — system docs with orchestration diagram
 ├── development-plan.md         — adapted to selected approach
@@ -661,20 +614,20 @@ After `/setup-agents` completes, the developer's workflow looks like this:
 
 ```mermaid
 flowchart TD
-    subgraph IDEA ["💡 Feature Idea"]
+    subgraph IDEA ["Feature Idea"]
         Start(("Developer has\nan idea"))
     end
 
-    subgraph PLAN ["📋 /plan"]
+    subgraph PLAN ["/plan"]
         P1["Describe the feature in natural language"]
-        P2["Answer clarifying questions\nfrom domain agent"]
+        P2["Answer clarifying questions"]
         P3["Review task breakdown\nand approve"]
         P4[("plan.md\nsaved")]
         P1 --> P2 --> P3 --> P4
     end
 
-    subgraph DISPATCH ["🎯 /dispatch"]
-        D1["Dispatch agent reads plan\nand assigns agents/skills"]
+    subgraph DISPATCH ["/dispatch"]
+        D1["Claude reads plan,\nassigns agents per task"]
         D2{"Review\nassignments"}
         D3["Adjust agents\nor task order"]
         D4[("dispatch.md\nsaved")]
@@ -683,16 +636,16 @@ flowchart TD
         D2 -->|"change"| D3 --> D1
     end
 
-    subgraph EXECUTE ["⚡ /execute"]
-        E1["Task 1 → agent runs → verify"]
-        E2["Task 2 → agent runs → verify"]
-        E3["Task N → agent runs → verify"]
-        E4["Run /check\nfull quality pipeline"]
+    subgraph EXECUTE ["/execute"]
+        E1["Task 1: follow agent directives, verify"]
+        E2["Task 2: follow agent directives, verify"]
+        E3["Task N: follow agent directives, verify"]
+        E4["Follow /check procedure\n(lint + types + tests)"]
         E5[("report.md\nsaved")]
         E1 --> E2 --> E3 --> E4 --> E5
     end
 
-    subgraph REVIEW ["📊 Review"]
+    subgraph REVIEW ["Review"]
         R1["Read execution report"]
         R2{"Follow-ups\nneeded?"}
         R1 --> R2
@@ -700,10 +653,10 @@ flowchart TD
 
     Start --> P1
     P4 --> D1
-    D4 -->|"✅ Approved"| E1
+    D4 -->|"Approved"| E1
     E5 --> R1
     R2 -->|"yes — new feature"| Start
-    R2 -->|"no — done 🎉"| Done(("Ship it"))
+    R2 -->|"no — done"| Done(("Ship it"))
 
     style IDEA fill:#f0f4ff,stroke:#4a6cf7,stroke-width:2px
     style PLAN fill:#f0fdf4,stroke:#22c55e,stroke-width:2px
@@ -713,95 +666,75 @@ flowchart TD
     style Done fill:#22c55e,color:#fff,stroke:#16a34a
 ```
 
-### Under the Hood — What Happens Inside
+### Under the Hood — Single Session Flow
 
 ```mermaid
 sequenceDiagram
     actor Dev as Developer
-    participant PS as /plan skill
-    participant DA as Domain Agent<br/>(Opus 4.6)
-    participant DS as /dispatch skill
-    participant DI as Dispatch Agent<br/>(Sonnet 4.6)
-    participant ES as /execute skill
-    participant AG as Assigned Agent
-    participant DOC as Docs Agent<br/>(Sonnet 4.6)
+    participant S as Claude Session
     participant FS as File System
 
-    Note over Dev,FS: 📋 PHASE 1 — PLANNING
+    Note over Dev,FS: PHASE 1 — PLANNING (user runs /plan)
 
-    Dev->>PS: /plan "Add notifications"
-    activate PS
-    PS->>FS: Read CLAUDE.md, agentic-system.md,<br/>development-plan.md, approach config
-    FS-->>PS: Project context + approach rules
-    PS->>DA: "Analyze feature scope,<br/>propose task breakdown"
-    activate DA
-    DA->>FS: Read source code in owned domain
-    DA-->>PS: Task breakdown + risks + dependencies
-    deactivate DA
-    PS->>Dev: "Here's the plan — 5 tasks.<br/>Does this look right?"
-    Dev-->>PS: "Split task 3, otherwise good"
-    PS->>FS: Write docs/plans/notif-plan.md
-    deactivate PS
+    Dev->>S: /plan "Add notifications"
+    activate S
+    S->>FS: Read CLAUDE.md, agentic-system.md,<br/>development-plan.md
+    FS-->>S: Project context + approach rules
+    S->>FS: Read domain agent definition<br/>(e.g., agents/backend.md)
+    FS-->>S: Agent directives + domain scope
+    S->>Dev: "Here's the plan — 5 tasks.<br/>Does this look right?"
+    Dev-->>S: "Split task 3, otherwise good"
+    S->>FS: Write docs/plans/notif-plan.md
+    deactivate S
 
-    Note over Dev,FS: 🎯 PHASE 2 — DISPATCH
+    Note over Dev,FS: PHASE 2 — DISPATCH (user runs /dispatch)
 
-    Dev->>DS: /dispatch
-    activate DS
-    DS->>FS: Read notif-plan.md +<br/>agentic-system.md (agent capabilities)
-    DS->>DI: "Assign agents and skills<br/>to these 6 tasks"
-    activate DI
-    DI-->>DS: Assignment table:<br/>Tasks 1-2 → backend (Opus, parallel)<br/>Task 3 → frontend (Sonnet)<br/>Tasks 4-5 → testing (Sonnet)<br/>Task 6 → docs (Sonnet)
-    deactivate DI
-    DS->>Dev: "Here are the assignments.<br/>Approve?"
+    Dev->>S: /dispatch
+    activate S
+    S->>FS: Read notif-plan.md +<br/>agentic-system.md + agents/dispatch.md
+    FS-->>S: Plan + agent capabilities + dispatch directives
+    S->>Dev: "Here are the assignments.<br/>Approve?"
 
     alt Developer approves
-        Dev-->>DS: ✅ Approved
-        DS->>FS: Write docs/plans/notif-dispatch.md
+        Dev-->>S: Approved
+        S->>FS: Write docs/plans/notif-dispatch.md
     else Developer adjusts
-        Dev-->>DS: "Move task 3 to backend agent"
-        DS->>DI: Re-assign with override
-        DI-->>DS: Updated assignments
-        DS->>Dev: "Updated. Approve?"
-        Dev-->>DS: ✅ Approved
-        DS->>FS: Write docs/plans/notif-dispatch.md
+        Dev-->>S: "Move task 3 to backend agent"
+        S->>Dev: "Updated. Approve?"
+        Dev-->>S: Approved
+        S->>FS: Write docs/plans/notif-dispatch.md
     end
-    deactivate DS
+    deactivate S
 
-    Note over Dev,FS: ⚡ PHASE 3 — EXECUTION
+    Note over Dev,FS: PHASE 3 — EXECUTION (user runs /execute)
 
-    Dev->>ES: /execute
-    activate ES
-    ES->>FS: Read notif-dispatch.md<br/>(verify status = Approved)
+    Dev->>S: /execute
+    activate S
+    S->>FS: Read notif-dispatch.md<br/>(verify status = Approved,<br/>find first Pending task)
 
     loop For each task group (sequential)
         loop For each task in group
-            ES->>AG: "Execute task N<br/>within your domain"
-            activate AG
-            AG->>FS: Read/Write source files
-            AG->>AG: Run verification commands
-            AG-->>ES: Result: done ✅ / failed ❌
-            deactivate AG
+            S->>FS: Read assigned agent definition
+            S->>FS: Update task status → In Progress
+            S->>FS: Read/Write source files
+            S->>S: Run verification commands
 
             alt Task failed
-                ES->>Dev: "Task N failed.<br/>Retry / Skip / Abort?"
-                Dev-->>ES: Decision
+                S->>FS: Update task status → Failed
+                S->>Dev: "Task N failed.<br/>Retry / Skip / Abort?"
+                Dev-->>S: Decision
+            else Task succeeded
+                S->>FS: Update task status → Done
             end
-
-            ES->>FS: Update task status in dispatch
         end
     end
 
-    ES->>ES: Run /check (lint + types + tests)
+    S->>S: Follow /check procedure<br/>(lint + types + tests)
+    S->>FS: Write docs/plans/notif-report.md
+    S->>Dev: "Done! Report at<br/>docs/plans/notif-report.md"
+    deactivate S
 
-    ES->>DOC: "Format execution report"
-    activate DOC
-    DOC->>FS: Write docs/plans/notif-report.md
-    deactivate DOC
-
-    ES->>Dev: "Done! Report at<br/>docs/plans/notif-report.md"
-    deactivate ES
-
-    Note over Dev,FS: 📊 REVIEW — Developer reads report, decides next steps
+    Note over Dev,FS: REVIEW — Developer reads report, decides next steps
 ```
 
 ### Feature Lifecycle — State Machine
@@ -814,13 +747,13 @@ stateDiagram-v2
     Planning --> Planned: plan.md saved
 
     Planned --> Dispatching: /dispatch
-    Dispatching --> UnderReview: Dispatch agent assigns
+    Dispatching --> UnderReview: Assignments produced
 
     UnderReview --> Dispatching: Developer requests changes
     UnderReview --> Dispatched: Developer approves
 
     Dispatched --> Executing: /execute
-    Executing --> TaskFailed: Agent reports failure
+    Executing --> TaskFailed: Task reports failure
 
     TaskFailed --> Executing: Developer retries
     TaskFailed --> Dispatched: Developer skips task
@@ -828,7 +761,7 @@ stateDiagram-v2
 
     Executing --> QualityCheck: All tasks done
     QualityCheck --> Complete: /check passes
-    QualityCheck --> Executing: /check fails → fix
+    QualityCheck --> Executing: /check fails, fix needed
 
     Complete --> [*]: Ship it
     Complete --> Idea: Follow-up feature
@@ -858,32 +791,30 @@ stateDiagram-v2
 ```mermaid
 flowchart LR
     subgraph input ["Input (read-only)"]
-        CM["CLAUDE.md"]
+        CM["CLAUDE.md\n(includes approach rules)"]
         AS["agentic-system.md"]
         DP["development-plan.md"]
-        AC["approach config"]
     end
 
     subgraph plan_phase ["/plan"]
         direction TB
-        PLAN_OUT["docs/plans/\n<b>notif-plan.md</b>"]
+        PLAN_OUT["docs/plans/\nnotif-plan.md"]
     end
 
     subgraph dispatch_phase ["/dispatch"]
         direction TB
-        DISP_OUT["docs/plans/\n<b>notif-dispatch.md</b>"]
+        DISP_OUT["docs/plans/\nnotif-dispatch.md"]
     end
 
     subgraph execute_phase ["/execute"]
         direction TB
-        SRC["src/**\n<i>modified by agents</i>"]
-        RPT["docs/plans/\n<b>notif-report.md</b>"]
+        SRC["src/**\nmodified by agents"]
+        RPT["docs/plans/\nnotif-report.md"]
     end
 
     CM --> plan_phase
     AS --> plan_phase
     DP --> plan_phase
-    AC --> plan_phase
 
     PLAN_OUT --> dispatch_phase
     AS --> dispatch_phase
@@ -909,6 +840,18 @@ flowchart LR
 1. **All 3 skills are opt-in.** A developer can always work directly with agents without the pipeline. The skills are accelerators, not gatekeepers.
 2. **Plans are documentation, not code.** All plan files live in `docs/plans/` and are human-readable markdown. They can be reviewed in PRs, referenced in issues, and read by new team members.
 3. **Dispatch never auto-executes.** The transition from `/dispatch` to `/execute` always requires manual approval. This is non-negotiable.
-4. **Approach selection is one-time per setup.** Changing approaches requires re-running `/setup-agents` (or manual editing). It's a project-level decision, not a per-feature decision.
-5. **Templates remain the source of truth.** All new content comes from `templates/`. The approach configs, plan formats, and skill behaviors are all Handlebars templates.
+4. **Approach selection can be changed by re-running `/setup-agents`.** It's a project-level decision, not a per-feature decision. A standalone `/setup-approach` skill is planned for v0.4.
+5. **Templates remain the source of truth.** All new content comes from `templates/`. The approach content, skill behaviors, and agent definitions are all Handlebars templates.
 6. **Backward compatibility.** Projects generated before orchestration was added continue to work. `/phase` remains functional as a thin wrapper.
+7. **Single session reality.** All agent "invocations" happen within a single Claude session. Skills are separate user-initiated commands. The pipeline is a recommended manual workflow.
+
+---
+
+## Deferred to v0.4
+
+The following features were evaluated and intentionally deferred:
+
+- **Documentation agent** — a dedicated agent for maintaining system docs and generating diagrams. Deferred because it was only used in one place (report formatting) and its scope constraints conflicted with required file access.
+- **`/setup-approach` skill** — standalone approach reconfiguration without re-running `/setup-agents`. Deferred because partial regeneration of approach-dependent file sections is fragile and requires clear boundary definitions.
+- **Multi-approach composition** — selecting 2-3 approaches and merging their effects. Deferred because template-level composition (merging directives, resolving hook conflicts) is not yet specified.
+- **Custom approach (free text)** — describing a methodology in free text for the system architect to extract. Deferred as an unbounded generation problem.

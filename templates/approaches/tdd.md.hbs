@@ -1,0 +1,30 @@
+### Development Approach: Test-Driven Development
+
+**Philosophy:** Tests are written before implementation. Test coverage is the primary quality signal.
+
+**Rules:**
+
+1. Every feature task follows red-green-refactor:
+   - **Red:** Write a failing test that describes the expected behavior.
+   - **Green:** Write the minimum implementation to make the test pass.
+   - **Refactor:** Clean up the code while keeping all tests green.
+2. Plans must include a "Test Strategy" section defining test types (unit, integration, e2e) and coverage targets per task.
+3. Write tests before implementation — this is directive #1 for all work. No exceptions.
+4. Never skip tests to save time. If a feature cannot be tested, reconsider the design until it can be.
+5. Test coverage must not decrease after any task completion. If new code is added, new tests must accompany it.
+6. Tests are documentation. Each test name should read as a specification: `should reject login with invalid credentials`, not `test login`.
+
+**Task execution order:**
+
+```
+1. Read the task requirements
+2. Write test cases that define "done"
+3. Run tests — confirm they fail (red)
+4. Implement the feature
+5. Run tests — confirm they pass (green)
+6. Refactor implementation and tests
+7. Run tests — confirm they still pass
+8. Check coverage has not decreased
+```
+
+**Test naming convention:** Use descriptive names that express intent. A reader should understand what the feature does by reading test names alone.

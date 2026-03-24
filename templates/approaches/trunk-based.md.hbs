@@ -1,0 +1,25 @@
+### Development Approach: Trunk-Based Development
+
+**Philosophy:** Single main branch, short-lived feature branches (max 1 day), feature flags for work in progress.
+
+**Rules:**
+
+1. Tasks must be mergeable independently. No task should require another unmerged task to function.
+2. Feature branches must not live longer than 1 day. Branches older than 1 day should be flagged for immediate attention and either merged or rebased.
+3. Large features use feature flags rather than long-lived branches. The flag allows code to be merged to main while the feature remains hidden from users.
+4. Commit after each logical change, not at the end of a session. Small, frequent commits reduce merge conflicts and make history useful.
+5. After each completed task: commit, push, and verify that main remains deployable.
+6. Every commit must leave main in a deployable state. If a commit breaks the build or tests, fixing it is the top priority before any other work.
+
+**Branching workflow:**
+
+```
+1. Pull latest main
+2. Create short-lived branch: feat/task-name
+3. Make changes in small commits
+4. Push and open PR (or merge directly for trivial changes)
+5. Merge same day — do not let the branch age
+6. Delete the branch after merge
+```
+
+**Feature flags:** For multi-day features, merge code behind a flag. The flag defaults to off in production. Remove the flag once the feature is fully shipped and stable.

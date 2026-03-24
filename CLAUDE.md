@@ -23,11 +23,13 @@ forgeline/
 │   └── system-architect.md      — Opus 4.6 agent, reads + generates
 ├── skills/
 │   └── setup-agents/
-│       └── SKILL.md             — main skill, runs the 7-step dialogue
+│       └── SKILL.md             — main skill, runs the 8-step dialogue
 ├── hooks/
 │   └── hooks.json               — internal plugin hooks
 ├── templates/                   — Handlebars templates for generated files
-│   └── skills/                  — skill-specific templates
+│   ├── agents/                  — agent-specific templates (dispatch)
+│   ├── skills/                  — skill-specific templates
+│   └── approaches/              — approach content templates for CLAUDE.md sections
 ├── docs/
 │   └── specs/                   — design specifications
 ├── .github/                     — issue/PR templates

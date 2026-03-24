@@ -6,6 +6,24 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [0.3.0-beta] — 2026-03-24
+
+### Added
+- Task orchestration pipeline: `/plan` → `/dispatch` → `/execute` — 3 new skill templates
+- Dispatch agent template (`templates/agents/dispatch.md.hbs`) — task assignment agent generated per-project
+- Development Approach selection — new Step 2 in dialogue (Iterative, Shape Up, TDD, Trunk-Based, YAGNI)
+- 5 approach content templates (`templates/approaches/`) — generate CLAUDE.md sections per methodology
+- Resume mechanism for `/execute` — per-task status tracking in dispatch files enables cross-session resume
+- Development Workflow section in generated CLAUDE.md and agentic-system.md
+- `docs/plans/` directory in generated projects for plan/dispatch/report audit trail
+
+### Changed
+- Setup dialogue expanded from 7 to 8 steps (new Step 2: Development Approach)
+- Standard skill set expanded from 4 to 7 skills (+`/plan`, `/dispatch`, `/execute`)
+- `/phase` skill refactored as backward-compat wrapper — redirects to orchestration pipeline when available
+- `development-plan.md.hbs` now adapts phase structure to selected approach
+- `system-architect.md` updated to generate dispatch agent, new skills, approach sections, and `docs/plans/`
+
 ## [0.2.0-beta] — 2026-03-22
 
 ### Added
@@ -29,6 +47,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Removed `skills` field from `plugin.json` — auto-discovery at `skills/*/SKILL.md` works without it
 - Added `marketplace.json` to fix `/plugin marketplace add` failing silently
 
-[Unreleased]: https://github.com/nikita-voloshyn/forgeline/compare/v0.2.0-beta...HEAD
+[Unreleased]: https://github.com/nikita-voloshyn/forgeline/compare/v0.3.0-beta...HEAD
+[0.3.0-beta]: https://github.com/nikita-voloshyn/forgeline/compare/v0.2.0-beta...v0.3.0-beta
 [0.2.0-beta]: https://github.com/nikita-voloshyn/forgeline/compare/v0.1.0-beta...v0.2.0-beta
 [0.1.0-beta]: https://github.com/nikita-voloshyn/forgeline/releases/tag/v0.1.0-beta
