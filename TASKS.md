@@ -10,20 +10,20 @@ Transparent workflow that automates repetitive instructions (split into subtasks
 **Spec:** `docs/specs/2026-03-23-orchestration-design.md` (Approved v2)
 
 **New components:**
-- [ ] Dispatch agent template (`templates/agents/dispatch.md.hbs`) — assigns agents/skills to plan tasks
-- [ ] `/plan` skill template (`templates/skills/plan.md.hbs`) — planning session with embedded output format
-- [ ] `/dispatch` skill template (`templates/skills/dispatch.md.hbs`) — agent assignment with embedded output format
-- [ ] `/execute` skill template (`templates/skills/execute.md.hbs`) — guided execution with resume mechanism and embedded report format
-- [ ] Approach content templates (`templates/approaches/*.md.hbs` x5) — CLAUDE.md section content per methodology
+- [x] Dispatch agent template (`templates/agents/dispatch.md.hbs`) — assigns agents/skills to plan tasks
+- [x] `/plan` skill template (`templates/skills/plan.md.hbs`) — planning session with embedded output format
+- [x] `/dispatch` skill template (`templates/skills/dispatch.md.hbs`) — agent assignment with embedded output format
+- [x] `/execute` skill template (`templates/skills/execute.md.hbs`) — guided execution with resume mechanism and embedded report format
+- [x] Approach content templates (`templates/approaches/*.md.hbs` x5) — CLAUDE.md section content per methodology
 
 **Modified components:**
-- [ ] Refactor `templates/skills/phase.md.hbs` — backward-compat wrapper redirecting to /plan
-- [ ] Update `skills/setup-agents/SKILL.md` — add Step 2 (approach, single-select) + new skills to standard set (7 total)
-- [ ] Update `agents/system-architect.md` — generate dispatch agent, new skills, approach section in CLAUDE.md
-- [ ] Update `templates/CLAUDE.md.hbs` — add approach section + workflow docs
-- [ ] Update `templates/agentic-system.md.hbs` — add dispatch agent, workflow diagram, new skills
-- [ ] Update `templates/development-plan.md.hbs` — approach-adapted phase structure
-- [ ] Update `templates/commands.md.hbs` — add /plan, /dispatch, /execute
+- [x] Refactor `templates/skills/phase.md.hbs` — backward-compat wrapper redirecting to /plan
+- [x] Update `skills/setup-agents/SKILL.md` — add Step 2 (approach, single-select) + new skills to standard set (7 total)
+- [x] Update `agents/system-architect.md` — generate dispatch agent, new skills, approach section in CLAUDE.md
+- [x] Update `templates/CLAUDE.md.hbs` — add approach section + workflow docs
+- [x] Update `templates/agentic-system.md.hbs` — add dispatch agent, workflow diagram, new skills
+- [x] Update `templates/development-plan.md.hbs` — approach-adapted phase structure
+- [x] Update `templates/commands.md.hbs` — add /plan, /dispatch, /execute
 
 **Generated output in target project:**
 ```
@@ -49,18 +49,19 @@ Currently phases and workflow are hardcoded. New Step 2 in dialogue where the us
 - **YAGNI/KISS** — minimal solution, refactor only when a second similar case appears
 
 **Tasks:**
-- [ ] Add Step 2 to `/setup-agents` dialogue (before Agents step, single-select)
-- [ ] Suggest one approach based on context (solo/team, project type)
-- [ ] Create 5 approach content templates (`templates/approaches/`)
-- [ ] Adapt `CLAUDE.md.hbs` to include approach section via `{{approachContent}}`
-- [ ] Adapt `development-plan.md.hbs` phase structure per approach
+- [x] Add Step 2 to `/setup-agents` dialogue (before Agents step, single-select)
+- [x] Suggest one approach based on context (solo/team, project type)
+- [x] Create 5 approach content templates (`templates/approaches/`)
+- [x] Adapt `CLAUDE.md.hbs` to include approach section via `{{approachContent}}`
+- [x] Adapt `development-plan.md.hbs` phase structure per approach
 
 ---
 
 ### Documentation & Architecture Update
-- [ ] Update README.md architecture diagram to reflect new dialogue steps and orchestration flow
-- [ ] Update CHANGELOG.md with new features
-- [ ] Update CLAUDE.md project structure if needed
+- [x] Update README.md architecture diagram to reflect new dialogue steps and orchestration flow
+- [x] Update CHANGELOG.md with new features
+- [x] Update README.md version badge to v0.3.0-beta
+- [x] Update CLAUDE.md project structure if needed
 
 ---
 
@@ -81,8 +82,11 @@ Currently phases and workflow are hardcoded. New Step 2 in dialogue where the us
 
 ## Done
 
+- [x] Task orchestration pipeline: `/plan` → `/dispatch` → `/execute` (v0.3.0-beta)
+- [x] Development Approach selection (Step 2 in dialogue)
+- [x] Design spec v2 (`docs/specs/2026-03-23-orchestration-design.md`)
 - [x] Initial plugin scaffold: skill, agent, hooks, templates
-- [x] 7-step configuration dialogue (`/setup-agents`)
+- [x] 8-step configuration dialogue (`/setup-agents`)
 - [x] System Architect agent (Opus 4.6)
 - [x] Context7 integration
 - [x] Marketplace manifest (`marketplace.json`)

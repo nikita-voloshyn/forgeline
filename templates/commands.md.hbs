@@ -27,6 +27,16 @@
 | `/{{name}}` | {{description}} |
 {{/each}}
 
+## Orchestration
+
+| Step | Skill | Output |
+|------|-------|--------|
+| 1. Plan | `/plan` | `docs/plans/<feature>-plan.md` |
+| 2. Dispatch | `/dispatch` | `docs/plans/<feature>-dispatch.md` |
+| 3. Execute | `/execute` | `docs/plans/<feature>-report.md` |
+
+Flow: `/plan` → `/dispatch` → review & approve → `/execute`
+
 {{#if linter}}
 ## Linting
 
