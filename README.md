@@ -50,6 +50,7 @@ Forgeline reads your project files, runs an interactive 8-step dialogue, and gen
 ```bash
 # 1. Install the plugin
 /plugin marketplace add nikita-voloshyn/forgeline
+/plugin install nikita-voloshyn/forgeline
 
 # 2. Navigate to any project and run
 /setup-agents
