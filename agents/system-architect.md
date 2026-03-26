@@ -40,13 +40,15 @@ Given a confirmed configuration from `/setup-agents`, generate the following in 
 
 agents/
 ├── <name>.md                — one per confirmed domain agent
-└── dispatch.md              — task assignment agent (always generated)
+├── dispatch.md              — task assignment agent (always generated)
+└── docs.md                  — documentation agent (always generated)
 
 skills/
 ├── <name>/SKILL.md          — one per confirmed skill (standard set below)
 ├── plan/SKILL.md            — planning session (always generated)
 ├── dispatch/SKILL.md        — agent/skill assignment (always generated)
-└── execute/SKILL.md         — guided execution (always generated)
+├── execute/SKILL.md         — guided execution (always generated)
+└── docs/SKILL.md            — documentation coverage (always generated)
 
 hooks/
 └── hooks.json               — PostToolUse + Stop hooks
@@ -56,7 +58,8 @@ docs/
 ├── agentic-system.md        — full system documentation with Mermaid diagrams
 ├── development-plan.md      — phase tracker adapted to selected approach
 ├── commands.md              — command reference based on detected tooling
-└── plans/                   — feature planning directory (empty at generation)
+├── plans/                   — feature planning directory (empty at generation)
+└── components/              — component documentation directory (empty at generation)
 ```
 
 ### Orchestration Files
@@ -72,6 +75,12 @@ The following files are always generated as part of the orchestration pipeline:
 4. **`skills/execute/SKILL.md`** — Use `templates/skills/execute.md.hbs`. Guided execution skill.
 
 5. **`docs/plans/`** — Create this empty directory. It will hold plan, dispatch, and report files generated during feature development.
+
+6. **`agents/docs.md`** — Use `templates/agents/docs.md.hbs`. This agent owns `docs/components/` and `docs/coverage.md`.
+
+7. **`skills/docs/SKILL.md`** — Use `templates/skills/docs.md.hbs`. Documentation coverage skill with audit, update, and status operations.
+
+8. **`docs/components/`** — Create this empty directory. It will hold per-component documentation files maintained by the docs agent.
 
 ### Approach Section in CLAUDE.md
 
@@ -256,7 +265,9 @@ After generating all files, verify and report:
 - Context7 lookups performed and what they informed
 - Any decisions made during generation
 - `agents/dispatch.md` exists and follows the agent file format
-- `skills/plan/SKILL.md`, `skills/dispatch/SKILL.md`, `skills/execute/SKILL.md` exist
+- `agents/docs.md` exists and follows the agent file format
+- `skills/plan/SKILL.md`, `skills/dispatch/SKILL.md`, `skills/execute/SKILL.md`, `skills/docs/SKILL.md` exist
 - `docs/plans/` directory exists
+- `docs/components/` directory exists
 - If approach was selected: CLAUDE.md contains a "Development Approach" section
 - CLAUDE.md contains a "Development Workflow" section
