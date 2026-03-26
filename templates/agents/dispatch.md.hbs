@@ -1,7 +1,28 @@
 ---
 name: dispatch
-description: "Task assignment and execution planning for the orchestration pipeline"
-model: claude-sonnet-4-6
+description: |
+  Use this agent when assigning agents and skills to planned tasks, producing dispatch files for execution. Triggers on "dispatch plan", "assign agents", "task assignment". Examples:
+
+  <example>
+  Context: Developer has a plan file ready and wants to assign agents
+  user: "dispatch the auth-refactor plan"
+  assistant: "I will use the dispatch agent to assign agents and skills to each task in the plan."
+  <commentary>
+  Plan exists and needs agent assignments — trigger dispatch agent.
+  </commentary>
+  </example>
+
+  <example>
+  Context: Developer wants to review or redo task assignments
+  user: "reassign the tasks in the current dispatch"
+  assistant: "I will use the dispatch agent to review and update the task assignments."
+  <commentary>
+  Dispatch review/update request — trigger dispatch agent.
+  </commentary>
+  </example>
+model: sonnet
+color: yellow
+tools: ["Read", "Write", "Bash", "Glob"]
 ---
 
 # Dispatch Agent

@@ -302,7 +302,7 @@ flowchart LR
 
 ```yaml
 name: dispatch
-model: claude-sonnet-4-6  # recommendation — actual model depends on session
+model: sonnet  # recommendation — actual model depends on session
 domain: "Task assignment and execution planning"
 ```
 

@@ -136,5 +136,5 @@ docs/
 
 | Domain | Model | Rationale |
 |--------|-------|-----------|
-| Backend, database, AI/ML, infrastructure | claude-opus-4-6 | Safety-critical code |
-| Frontend, testing, CI/CD, docs | claude-sonnet-4-6 | High iteration speed |
+| Backend, database, AI/ML, infrastructure | opus | Safety-critical code |
+| Frontend, testing, CI/CD, docs | sonnet | High iteration speed |
