@@ -106,7 +106,17 @@ Each generated agent must follow this format:
 ```markdown
 ---
 name: <agent-name>
-description: "<domain and responsibilities — include <example> blocks for triggering>"
+description: |
+  <domain and responsibilities>
+
+  <example>
+  Context: <situation>
+  user: "<request>"
+  assistant: "<response>"
+  <commentary>
+  <why this agent should be triggered>
+  </commentary>
+  </example>
 model: <opus | sonnet | haiku | inherit>
 color: <blue | cyan | green | yellow | magenta | red>
 tools: ["<tool1>", "<tool2>"]

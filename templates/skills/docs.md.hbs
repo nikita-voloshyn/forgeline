@@ -24,12 +24,13 @@ Full scan of the project. Creates or updates all component docs and rebuilds the
 
 1. **Read existing registry.** Read `docs/coverage.md` if it exists. If it does not exist, start with an empty registry.
 
-2. **Determine component scope.** Read all agent definitions in `agents/` and extract the `Owns` list from each agent's Domain section. These owned paths define which source files need documentation.
+2. **Determine component scope.** Read all agent definitions in `agents/` and extract the `Owns` list from each agent's Domain section. Skip the docs agent itself (`name: docs`) — it owns `docs/components/` and `docs/coverage.md` which are documentation output, not source to be documented. The remaining owned paths define which source files need documentation.
 
 3. **Enumerate source files.** For each owned path, list all files. Exclude:
    - Test files: `*.test.*`, `*.spec.*`, `__tests__/`
    - Generated output: `dist/`, `build/`, `.cache/`
    - Lock files and dependency directories: `*.lock`, `*.lock.json`, `node_modules/`
+   - Documentation output: `docs/`, `docs/**`
 
 4. **Check status for each file.** For every source file:
    - Run `git log -1 --format="%ad" --date=short -- <path>` to get its last modification date
@@ -40,7 +41,7 @@ Full scan of the project. Creates or updates all component docs and rebuilds the
    - **`Stale`** — read the existing doc file and the source file; update only the sections that reflect the source changes
    - **`Missing`** — read the source file, infer the component's purpose and interface, write a new doc file
 
-6. **Write doc files.** Save to `docs/components/<slug>.md`. The slug is derived from the source path: lowercase, path separators and spaces replaced with hyphens, special characters removed, truncated to 60 characters. Example: `src/auth/service.ts` → `src-auth-service.md`.
+6. **Write doc files.** Save to `docs/components/<slug>.md`. The slug is derived from the source path: lowercase, path separators and spaces replaced with hyphens, special characters removed, truncated to 60 characters. If truncation occurs or the slug already exists for a different source path, append 6 hex characters from a stable hash of the full source path to avoid collisions. Example: `src/auth/service.ts` → `src-auth-service.md`; a long path that collides → `src-very-long-path-to-component-tha-a1b2c3.md`.
 
    Each doc file follows this format:
 

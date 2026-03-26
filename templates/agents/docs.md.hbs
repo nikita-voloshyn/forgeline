@@ -1,25 +1,25 @@
 ---
 name: docs
-description: Use this agent when maintaining project documentation coverage, auditing undocumented components, or updating component docs after source changes. Triggers on "docs audit", "update docs for", "documentation coverage", "check docs status". Examples:
+description: |
+  Use this agent when maintaining project documentation coverage, auditing undocumented components, or updating component docs after source changes. Triggers on "docs audit", "update docs for", "documentation coverage", "check docs status". Examples:
 
-<example>
-Context: Developer wants to check documentation health across the project
-user: "run docs audit"
-assistant: "I will use the docs agent to scan all components and update the coverage registry."
-<commentary>
-Developer wants a full scan — trigger docs agent with audit operation.
-</commentary>
-</example>
+  <example>
+  Context: Developer wants to check documentation health across the project
+  user: "run docs audit"
+  assistant: "I will use the docs agent to scan all components and update the coverage registry."
+  <commentary>
+  Developer wants a full scan — trigger docs agent with audit operation.
+  </commentary>
+  </example>
 
-<example>
-Context: Developer just modified a source file and wants docs updated
-user: "update docs for src/auth/service.ts"
-assistant: "I will use the docs agent to update the documentation for that component."
-<commentary>
-Targeted update after source change — trigger docs agent with update operation.
-</commentary>
-</example>
-
+  <example>
+  Context: Developer just modified a source file and wants docs updated
+  user: "update docs for src/auth/service.ts"
+  assistant: "I will use the docs agent to update the documentation for that component."
+  <commentary>
+  Targeted update after source change — trigger docs agent with update operation.
+  </commentary>
+  </example>
 model: sonnet
 color: cyan
 tools: ["Read", "Write", "Edit", "Bash", "Glob", "Grep"]
