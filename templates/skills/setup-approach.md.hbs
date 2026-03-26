@@ -16,17 +16,17 @@ Change the development approach for {{projectName}} without re-running the full 
 
    Read `CLAUDE.md` and look for a section starting with `## Development Approach:`.
 
-   - If found: extract the approach name from the heading (e.g., `## Development Approach: Iterative Delivery` → current approach is "Iterative + Timeboxing"). Report: "Current approach: **<name>**"
-   - Also check for a `### Secondary Approaches` subsection. If present, extract secondary approach names from their `### Development Approach:` headings within that subsection.
+   - If found: extract the approach name by reading the text after the colon (e.g., `## Development Approach: Iterative + Timeboxing` → current approach is "Iterative + Timeboxing"). Report: "Current approach: **<name>**"
+   - Also check for a `### Secondary Approaches` subsection. If present, extract secondary approach names from the approach content headings within that subsection.
    - If not found: report "No approach currently configured."
 
-   Heading-to-name mapping:
-   - `Iterative Delivery` → Iterative + Timeboxing
-   - `Shape Up` → Shape Up
-   - `Test-Driven Development` → TDD-First
-   - `Trunk-Based Development` → Trunk-Based
-   - `YAGNI (You Aren't Gonna Need It)` → YAGNI/KISS
-   - `Custom` → Custom
+   The approach name in the heading is always one of the option names from Step 3:
+   - Iterative + Timeboxing
+   - Shape Up
+   - TDD-First
+   - Trunk-Based
+   - YAGNI/KISS
+   - Custom
 
 2. **Load approach reference**
 
@@ -77,21 +77,22 @@ Change the development approach for {{projectName}} without re-running the full 
 
    **If the developer selected approaches (1-5):**
 
-   Read the matching sections from `docs/approaches-reference.md`. Each section starts at `## <Approach Name>` and ends before the next `## ` heading (or end of file).
+   Read the matching sections from `docs/approaches-reference.md`. Each section starts at `## <Approach Name>` (e.g., `## Iterative + Timeboxing`) and ends before the next `## ` heading (or end of file). Extract the **body content** below the `## ` heading — do not include the reference file's `## ` heading itself.
 
-   Name-to-heading mapping for reference file:
-   - Iterative + Timeboxing → `## Iterative + Timeboxing`
-   - Shape Up → `## Shape Up`
-   - TDD-First → `## TDD-First`
-   - Trunk-Based → `## Trunk-Based`
-   - YAGNI/KISS → `## YAGNI/KISS`
-   - Custom → `## Custom`
+   Reference file section headings:
+   - `## Iterative + Timeboxing`
+   - `## Shape Up`
+   - `## TDD-First`
+   - `## Trunk-Based`
+   - `## YAGNI/KISS`
+   - `## Custom`
 
    In `CLAUDE.md`:
 
    **Primary approach:**
-   - If an approach section exists: replace everything from `## Development Approach:` up to (but not including) `### Secondary Approaches` or the next `## ` heading with the new primary content. The heading should be the one from the approach content itself (e.g., `## Development Approach: Iterative Delivery`).
-   - If no approach section exists: insert the content before the `## Development Workflow` section. If that section does not exist, append at the end of the file.
+   - Create/maintain the heading `## Development Approach: <approach name>` (e.g., `## Development Approach: Iterative + Timeboxing`). Insert the body content from the reference file below this heading.
+   - If an approach section already exists: replace everything from `## Development Approach:` up to (but not including) `### Secondary Approaches` or the next `## ` heading.
+   - If no approach section exists: insert before the `## Development Workflow` section. If that section does not exist, append at the end of the file.
 
    **Secondary approaches (if any):**
    - After the primary approach content, add a `### Secondary Approaches` subsection with a precedence note: "The following approaches layer additional rules on top of the primary approach above. Where rules conflict, the primary approach takes precedence."

@@ -86,7 +86,7 @@ The following files are always generated as part of the orchestration pipeline:
 
 9. **`skills/setup-approach/SKILL.md`** — Use `templates/skills/setup-approach.md.hbs`. Standalone approach reconfiguration skill.
 
-10. **`docs/approaches-reference.md`** — Use `templates/approaches-reference.md.hbs`. Render each of the 5 approach templates (`templates/approaches/*.md.hbs`) and pass the rendered content as `{{{iterativeContent}}}`, `{{{shapeUpContent}}}`, `{{{tddContent}}}`, `{{{trunkBasedContent}}}`, `{{{yagniContent}}}`. This file is always generated regardless of whether an approach was selected in Step 2.
+10. **`docs/approaches-reference.md`** — Use `templates/approaches-reference.md.hbs`. Render each of the 5 approach templates (`templates/approaches/*.md.hbs`) and pass the rendered content as `{{{iterativeContent}}}`, `{{{shapeUpContent}}}`, `{{{tddContent}}}`, `{{{trunkBasedContent}}}`, `{{{yagniContent}}}`. The rendered content includes each template's `### Development Approach: ...` heading and body — this is intentional, as `/setup-approach` creates its own `## Development Approach: <name>` wrapper heading in CLAUDE.md and inserts the reference body below it. This file is always generated regardless of whether an approach was selected in Step 2.
 
 ### Approach Section in CLAUDE.md
 
