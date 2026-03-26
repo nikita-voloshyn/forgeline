@@ -60,7 +60,8 @@ docs/
 ├── development-plan.md      — phase tracker adapted to selected approach
 ├── commands.md              — command reference based on detected tooling
 ├── plans/                   — feature planning directory (empty at generation)
-└── components/              — component documentation directory (empty at generation)
+├── components/              — component documentation directory (empty at generation)
+└── approaches-reference.md  — all 5 approach contents for /setup-approach skill
 ```
 
 ### Orchestration Files
@@ -83,6 +84,10 @@ The following files are always generated as part of the orchestration pipeline:
 
 8. **`docs/components/`** — Create this empty directory. It will hold per-component documentation files maintained by the docs agent.
 
+9. **`skills/setup-approach/SKILL.md`** — Use `templates/skills/setup-approach.md.hbs`. Standalone approach reconfiguration skill.
+
+10. **`docs/approaches-reference.md`** — Use `templates/approaches-reference.md.hbs`. Render each of the 5 approach templates (`templates/approaches/*.md.hbs`) and pass the rendered content as `{{{iterativeContent}}}`, `{{{shapeUpContent}}}`, `{{{tddContent}}}`, `{{{trunkBasedContent}}}`, `{{{yagniContent}}}`. The rendered content includes each template's `### Development Approach: ...` heading and body — this is intentional, as `/setup-approach` creates its own `## Development Approach: <name>` wrapper heading in CLAUDE.md and inserts the reference body below it. This file is always generated regardless of whether an approach was selected in Step 2.
+
 ### Approach Section in CLAUDE.md
 
 If the confirmed configuration includes an `approach` selection (from Step 2 of the dialogue):
@@ -92,12 +97,32 @@ If the confirmed configuration includes an `approach` selection (from Step 2 of 
 3. Pass the rendered content as `{{approachContent}}` to `templates/CLAUDE.md.hbs`
 4. The CLAUDE.md template includes a conditional block that inserts the approach section
 
+**Multi-approach composition:** If `secondaryApproaches` is present (array of approach names):
+
+1. Render each secondary approach template the same way
+2. Concatenate the rendered contents (separated by `---`)
+3. Pass the concatenated result as `{{secondaryApproachContent}}` to `templates/CLAUDE.md.hbs`
+4. The template inserts secondary approaches under a "Secondary Approaches" subheading with a precedence note
+
 Approach slug mapping:
 - "Iterative + Timeboxing" → `iterative.md.hbs`
 - "Shape Up" → `shape-up.md.hbs`
 - "TDD-First" → `tdd.md.hbs`
 - "Trunk-Based" → `trunk-based.md.hbs`
 - "YAGNI/KISS" → `yagni.md.hbs`
+- "Custom" → no template; content generated from free text (see below)
+
+### Custom Approach Generation
+
+When the `/setup-agents` skill passes a custom approach (free text from the developer), extract structured content matching the standard approach format:
+
+1. **Philosophy** — one sentence summarizing the methodology's core belief
+2. **Rules** — 4-6 numbered directives, each actionable and verifiable
+3. **Phase structure or process** — a concrete table or step list showing how work is organized
+
+Use this heading: `### Development Approach: Custom`
+
+The generated content must be presented to the developer for approval before being used. Once approved, include it in `docs/approaches-reference.md` under `## Custom` (appended after the 5 standard approaches).
 
 ## Agent File Format
 
@@ -285,8 +310,9 @@ After generating all files, verify and report:
 - Any decisions made during generation
 - `agents/dispatch.md` exists and follows the agent file format
 - `agents/docs.md` exists and follows the agent file format
-- `skills/plan/SKILL.md`, `skills/dispatch/SKILL.md`, `skills/execute/SKILL.md`, `skills/docs/SKILL.md` exist
+- `skills/plan/SKILL.md`, `skills/dispatch/SKILL.md`, `skills/execute/SKILL.md`, `skills/docs/SKILL.md`, `skills/setup-approach/SKILL.md` exist
 - `docs/plans/` directory exists
 - `docs/components/` directory exists
+- `docs/approaches-reference.md` exists and contains all 5 approach sections
 - If approach was selected: CLAUDE.md contains a "Development Approach" section
 - CLAUDE.md contains a "Development Workflow" section

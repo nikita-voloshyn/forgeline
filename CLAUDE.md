@@ -20,16 +20,17 @@ forgeline/
 │   ├── plugin.json              — plugin manifest (no skills/hooks fields — auto-discovery)
 │   └── marketplace.json         — marketplace manifest (required for /plugin marketplace add)
 ├── agents/
-│   └── system-architect.md      — Opus 4.6 agent, reads + generates
+│   └── system-architect.md      — Opus agent, reads + generates
 ├── skills/
 │   └── setup-agents/
 │       └── SKILL.md             — main skill, runs the 8-step dialogue
 ├── hooks/
 │   └── hooks.json               — internal plugin hooks
 ├── templates/                   — Handlebars templates for generated files
-│   ├── agents/                  — agent-specific templates (dispatch)
+│   ├── agents/                  — agent-specific templates (dispatch, docs)
 │   ├── skills/                  — skill-specific templates
-│   └── approaches/              — approach content templates for CLAUDE.md sections
+│   ├── approaches/              — approach content templates for CLAUDE.md sections
+│   └── approaches-reference.md.hbs — all approaches in one file for /setup-approach
 ├── docs/
 │   └── specs/                   — design specifications
 ├── .github/                     — issue/PR templates

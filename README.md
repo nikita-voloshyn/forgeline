@@ -93,6 +93,7 @@ flowchart LR
 | `/setup-agents` skill | Interactive dialogue, user confirmation | runs in user session |
 | `system-architect` agent | File analysis, Context7 lookups, generation | opus |
 | `dispatch` agent | Task assignment within orchestration pipeline | generated per-project |
+| `docs` agent | Documentation coverage — audit, update, status | generated per-project |
 | `templates/` | Source of truth for all generated content | Handlebars |
 
 ---
@@ -117,10 +118,12 @@ Forgeline auto-detects your project from these files:
 
 agents/
 ├── 🤖 *.md                       — domain agents (backend, frontend, testing, etc.)
-└── 🎯 dispatch.md                — task assignment agent
+├── 🎯 dispatch.md                — task assignment agent
+└── 📖 docs.md                    — documentation coverage agent
 
 skills/*/SKILL.md                  — /check, /changelog, /phase, /deploy-check,
-                                     /plan, /dispatch, /execute, + stack-specific
+                                     /plan, /dispatch, /execute, /docs,
+                                     /setup-approach, + stack-specific
 
 CLAUDE.md                          — architecture rules + approach + workflow
 
@@ -128,7 +131,9 @@ docs/
 ├── 📖 agentic-system.md          — full system documentation with diagrams
 ├── 📅 development-plan.md        — phase tracker (approach-adapted)
 ├── 📚 commands.md                — command reference
-└── 📋 plans/                     — feature plans, dispatches, and reports
+├── 📋 plans/                     — feature plans, dispatches, and reports
+├── 📂 components/                — per-component documentation (maintained by docs agent)
+└── 🧭 approaches-reference.md   — all 5 approaches for /setup-approach
 ```
 
 ---
@@ -142,7 +147,7 @@ Forgeline walks you through 8 steps before generating anything:
 | **1** | 📖 Project Understanding | Confirms what it read from your files |
 | **2** | 🧭 Development Approach | Iterative, Shape Up, TDD, Trunk-Based, or YAGNI |
 | **3** | 🤖 Agents | Proposes agents based on your stack — you adjust |
-| **4** | ⚡ Skills | Standard set (7 skills) + stack-specific additions |
+| **4** | ⚡ Skills | Standard set (9 skills) + stack-specific additions |
 | **5** | 🔌 Plugins | Context7 always on, others recommended by stack |
 | **6** | 🪝 Hooks | PostToolUse linting + Stop safety scan |
 | **7** | 🔐 Permissions | allow/deny pre-filled — you extend |
