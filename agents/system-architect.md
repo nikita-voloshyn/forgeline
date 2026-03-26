@@ -1,7 +1,8 @@
 ---
 name: system-architect
 description: "Analyzes a project's tech stack and generates a complete multi-agent Claude Code workspace from a confirmed configuration"
-model: claude-opus-4-6
+model: opus
+color: magenta
 ---
 
 # System Architect Agent
@@ -105,8 +106,10 @@ Each generated agent must follow this format:
 ```markdown
 ---
 name: <agent-name>
-description: "<domain and responsibilities>"
-model: <claude-opus-4-6 | claude-sonnet-4-6>
+description: "<domain and responsibilities — include <example> blocks for triggering>"
+model: <opus | sonnet | haiku | inherit>
+color: <blue | cyan | green | yellow | magenta | red>
+tools: ["<tool1>", "<tool2>"]
 ---
 
 # <Agent Name>
@@ -121,6 +124,12 @@ Forbidden from: <files/directories>
 ## Verification
 <commands to run after changes>
 ```
+
+**Model selection:** `opus` for safety-critical (backend, DB, AI/ML, infra), `sonnet` for high-iteration (frontend, testing, docs), `inherit` when no specific need.
+
+**Color semantics:** blue/cyan for analysis, green for success-oriented, yellow for caution/validation, red for critical/security, magenta for creative/generation.
+
+**Tools:** restrict to minimum needed (principle of least privilege). Omit field for full access.
 
 ## Skill File Format
 

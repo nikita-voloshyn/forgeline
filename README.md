@@ -91,7 +91,7 @@ flowchart LR
 | Component | Role | Model |
 |-----------|------|-------|
 | `/setup-agents` skill | Interactive dialogue, user confirmation | runs in user session |
-| `system-architect` agent | File analysis, Context7 lookups, generation | claude-opus-4-6 |
+| `system-architect` agent | File analysis, Context7 lookups, generation | opus |
 | `dispatch` agent | Task assignment within orchestration pipeline | generated per-project |
 | `templates/` | Source of truth for all generated content | Handlebars |
 

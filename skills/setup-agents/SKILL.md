@@ -63,8 +63,9 @@ If the developer wants to skip approach selection, proceed without it — the ap
 
 Based on the detected stack, propose specialized agents. Rules:
 
-- **claude-opus-4-6** for safety-critical domains: backend logic, database, AI/ML pipelines, infrastructure
-- **claude-sonnet-4-6** for high-iteration domains: frontend/UI, testing, CI/CD, documentation
+- **opus** for safety-critical domains: backend logic, database, AI/ML pipelines, infrastructure
+- **sonnet** for high-iteration domains: frontend/UI, testing, CI/CD, documentation
+- Assign a **color** to each agent using semantic conventions: `blue`/`cyan` for analysis/review, `green` for success-oriented, `yellow` for caution/validation, `red` for critical/security, `magenta` for creative/generation
 - Each agent must have a clearly defined domain and explicit forbidden zones
 - Always include a `testing` agent
 - A `dispatch` agent is always generated automatically for the orchestration pipeline — do not include it in the proposals
