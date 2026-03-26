@@ -55,7 +55,7 @@ Based on the project context from Step 1, suggest a development approach. Presen
 
 The developer selects exactly one approach. Save the selection as `{{approach}}` in the confirmed configuration. The selected approach will generate a "Development Approach" section in the project's CLAUDE.md.
 
-If the developer wants to skip approach selection, proceed without it — the approach section will not be generated.
+If the developer wants to skip approach selection, proceed without it — the approach section will not be generated. The approach can be changed later at any time using `/setup-approach` without re-running the full setup.
 
 ---
 
@@ -88,6 +88,7 @@ Always include the standard set. Add stack-specific skills when relevant tooling
 - `/dispatch` — assign agents and skills to a plan's tasks
 - `/execute` — execute an approved dispatch plan task by task
 - `/docs` — maintain documentation coverage: audit components, update docs, check status
+- `/setup-approach` — change the development approach without re-running /setup-agents
 
 **Stack-specific examples:**
 - `/migrate` — if Prisma, Drizzle, Alembic, or similar detected

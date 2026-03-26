@@ -60,7 +60,8 @@ docs/
 ├── development-plan.md      — phase tracker adapted to selected approach
 ├── commands.md              — command reference based on detected tooling
 ├── plans/                   — feature planning directory (empty at generation)
-└── components/              — component documentation directory (empty at generation)
+├── components/              — component documentation directory (empty at generation)
+└── approaches-reference.md  — all 5 approach contents for /setup-approach skill
 ```
 
 ### Orchestration Files
@@ -82,6 +83,10 @@ The following files are always generated as part of the orchestration pipeline:
 7. **`skills/docs/SKILL.md`** — Use `templates/skills/docs.md.hbs`. Documentation coverage skill with audit, update, and status operations.
 
 8. **`docs/components/`** — Create this empty directory. It will hold per-component documentation files maintained by the docs agent.
+
+9. **`skills/setup-approach/SKILL.md`** — Use `templates/skills/setup-approach.md.hbs`. Standalone approach reconfiguration skill.
+
+10. **`docs/approaches-reference.md`** — Use `templates/approaches-reference.md.hbs`. Render each of the 5 approach templates (`templates/approaches/*.md.hbs`) and pass the rendered content as `{{{iterativeContent}}}`, `{{{shapeUpContent}}}`, `{{{tddContent}}}`, `{{{trunkBasedContent}}}`, `{{{yagniContent}}}`. This file is always generated regardless of whether an approach was selected in Step 2.
 
 ### Approach Section in CLAUDE.md
 
@@ -285,8 +290,9 @@ After generating all files, verify and report:
 - Any decisions made during generation
 - `agents/dispatch.md` exists and follows the agent file format
 - `agents/docs.md` exists and follows the agent file format
-- `skills/plan/SKILL.md`, `skills/dispatch/SKILL.md`, `skills/execute/SKILL.md`, `skills/docs/SKILL.md` exist
+- `skills/plan/SKILL.md`, `skills/dispatch/SKILL.md`, `skills/execute/SKILL.md`, `skills/docs/SKILL.md`, `skills/setup-approach/SKILL.md` exist
 - `docs/plans/` directory exists
 - `docs/components/` directory exists
+- `docs/approaches-reference.md` exists and contains all 5 approach sections
 - If approach was selected: CLAUDE.md contains a "Development Approach" section
 - CLAUDE.md contains a "Development Workflow" section

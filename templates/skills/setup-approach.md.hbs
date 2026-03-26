@@ -1,0 +1,103 @@
+---
+name: setup-approach
+description: "Change the development approach in CLAUDE.md without re-running /setup-agents. Triggers on 'change approach', 'switch approach', 'setup approach', 'reconfigure approach'."
+version: 0.1.0
+---
+
+# /setup-approach
+
+Change the development approach for {{projectName}} without re-running the full `/setup-agents` dialogue. This skill directly edits the "Development Approach" section in `CLAUDE.md`.
+
+---
+
+## Steps
+
+1. **Read current approach**
+
+   Read `CLAUDE.md` and look for a section starting with `## Development Approach:`.
+
+   - If found: extract the approach name from the heading (e.g., `## Development Approach: Iterative Delivery` → current approach is "Iterative + Timeboxing"). Report: "Current approach: **<name>**"
+   - If not found: report "No approach currently configured."
+
+   Heading-to-name mapping:
+   - `Iterative Delivery` → Iterative + Timeboxing
+   - `Shape Up` → Shape Up
+   - `Test-Driven Development` → TDD-First
+   - `Trunk-Based Development` → Trunk-Based
+   - `YAGNI (You Aren't Gonna Need It)` → YAGNI/KISS
+
+2. **Load approach reference**
+
+   Read `docs/approaches-reference.md`.
+
+   - If the file does not exist: stop and report "Approach reference file not found. Run `/setup-agents` to generate it." Do not proceed.
+
+3. **Present options**
+
+   Show all 5 approaches with a one-line description. Mark the current selection (if any):
+
+   ```
+   Development Approaches:
+
+   1. Iterative + Timeboxing — Ship working increments every 1-3 days
+   2. Shape Up — 6-week cycles, 2-week cooldown, appetites not estimates
+   3. TDD-First — Tests before implementation, coverage as quality signal
+   4. Trunk-Based — Single main branch, short-lived branches, feature flags
+   5. YAGNI/KISS — Build the minimum, refactor on second similar case
+   6. None — Remove the approach section entirely
+
+   Current: <name or "none">
+   ```
+
+   Wait for the developer to select.
+
+4. **Confirm change**
+
+   If the developer selected the same approach as current: "Already using **<name>**. No changes needed." Stop.
+
+   Otherwise, confirm before editing:
+
+   ```
+   Switch from <current or "none"> to <new>? [yes / no]
+   ```
+
+   Wait for explicit confirmation. Do not edit without it.
+
+5. **Apply the change**
+
+   **If the developer selected an approach (1-5):**
+
+   Read the matching section from `docs/approaches-reference.md`. The section starts at `## <Approach Name>` and ends before the next `## ` heading (or end of file).
+
+   Name-to-heading mapping for reference file:
+   - Iterative + Timeboxing → `## Iterative + Timeboxing`
+   - Shape Up → `## Shape Up`
+   - TDD-First → `## TDD-First`
+   - Trunk-Based → `## Trunk-Based`
+   - YAGNI/KISS → `## YAGNI/KISS`
+
+   In `CLAUDE.md`:
+   - If an approach section exists: replace everything from `## Development Approach:` up to (but not including) the next `## ` heading with the new content. The heading should be the one from the approach content itself (e.g., `## Development Approach: Iterative Delivery`).
+   - If no approach section exists: insert the content before the `## Development Workflow` section. If that section does not exist, append at the end of the file.
+
+   **If the developer selected "None" (6):**
+
+   Remove the entire `## Development Approach: ...` section from `CLAUDE.md` — everything from that heading up to (but not including) the next `## ` heading.
+
+6. **Verify**
+
+   Read `CLAUDE.md` and confirm:
+   - If approach selected: the `## Development Approach:` heading exists with the correct approach name and content
+   - If "None": no `## Development Approach:` section exists
+
+   Report the result: "Approach changed to **<name>**." or "Approach removed."
+
+---
+
+## Rules
+
+- Only modify `CLAUDE.md`. Do not touch any other files.
+- Use the content from `docs/approaches-reference.md` verbatim. Do not summarize or rephrase.
+- Always confirm before making changes. This is a hard gate.
+- If `CLAUDE.md` does not exist, stop and suggest running `/setup-agents` first.
+- If `docs/approaches-reference.md` does not exist, stop and suggest running `/setup-agents` first.

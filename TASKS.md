@@ -2,8 +2,10 @@
 
 ## Active
 
-### v0.4 Planning
-_Not started yet._
+### v0.4
+- [x] `/setup-approach` skill — standalone approach reconfiguration without re-running /setup-agents
+- [ ] Multi-approach composition — selecting 2-3 approaches with conflict resolution
+- [ ] Custom approach (free text) — describe methodology, system architect extracts config
 
 ---
 
@@ -16,16 +18,9 @@ _Not started yet._
 - [ ] Adapt found skills to the specific project (not copy as-is)
 - [ ] Add as optional step in dialogue (between the Skills step and the Plugins step)
 
-## Backlog
-
-### Deferred to v0.4
-- [ ] Documentation agent (`agents/docs.md`) — dedicated agent for system docs and diagrams
-- [ ] `/setup-approach` skill — standalone approach reconfiguration without re-running /setup-agents
-- [ ] Multi-approach composition — selecting 2-3 approaches with conflict resolution
-- [ ] Custom approach (free text) — describe methodology, system architect extracts config
-
 ## Done
 
+- [x] Documentation agent + `/docs` skill + Context7 compliance fix (v0.4, PR #6)
 - [x] Task orchestration pipeline: `/plan` → `/dispatch` → `/execute` (v0.3.0-beta)
 - [x] Development Approach selection (Step 2 in dialogue)
 - [x] Design spec v2 (`docs/specs/2026-03-23-orchestration-design.md`)

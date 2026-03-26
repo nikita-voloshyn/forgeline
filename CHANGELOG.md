@@ -6,6 +6,17 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+### Added
+- `/setup-approach` skill — change development approach without re-running `/setup-agents`
+- `docs/approaches-reference.md` — generated reference file with all 5 approach contents, used by `/setup-approach`
+- Documentation agent + `/docs` skill — audit, update, and check documentation coverage across all project components
+- Context7 compliance: `color`, `tools`, `<example>` blocks, `version` in all agent/skill templates
+- YAML block scalar format for agent descriptions with `<example>` blocks
+
+### Changed
+- Standard skill set expanded from 8 to 9 (+`/setup-approach`)
+- Model values use short form (`opus`/`sonnet`) per Claude Code plugin validator requirements
+
 ## [0.3.0-beta] — 2026-03-24
 
 ### Added
