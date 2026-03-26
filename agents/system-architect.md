@@ -97,12 +97,32 @@ If the confirmed configuration includes an `approach` selection (from Step 2 of 
 3. Pass the rendered content as `{{approachContent}}` to `templates/CLAUDE.md.hbs`
 4. The CLAUDE.md template includes a conditional block that inserts the approach section
 
+**Multi-approach composition:** If `secondaryApproaches` is present (array of approach names):
+
+1. Render each secondary approach template the same way
+2. Concatenate the rendered contents (separated by `---`)
+3. Pass the concatenated result as `{{secondaryApproachContent}}` to `templates/CLAUDE.md.hbs`
+4. The template inserts secondary approaches under a "Secondary Approaches" subheading with a precedence note
+
 Approach slug mapping:
 - "Iterative + Timeboxing" → `iterative.md.hbs`
 - "Shape Up" → `shape-up.md.hbs`
 - "TDD-First" → `tdd.md.hbs`
 - "Trunk-Based" → `trunk-based.md.hbs`
 - "YAGNI/KISS" → `yagni.md.hbs`
+- "Custom" → no template; content generated from free text (see below)
+
+### Custom Approach Generation
+
+When the `/setup-agents` skill passes a custom approach (free text from the developer), extract structured content matching the standard approach format:
+
+1. **Philosophy** — one sentence summarizing the methodology's core belief
+2. **Rules** — 4-6 numbered directives, each actionable and verifiable
+3. **Phase structure or process** — a concrete table or step list showing how work is organized
+
+Use this heading: `### Development Approach: Custom`
+
+The generated content must be presented to the developer for approval before being used. Once approved, include it in `docs/approaches-reference.md` under `## Custom` (appended after the 5 standard approaches).
 
 ## Agent File Format
 

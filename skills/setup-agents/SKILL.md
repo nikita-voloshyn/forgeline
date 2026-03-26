@@ -52,8 +52,21 @@ Based on the project context from Step 1, suggest a development approach. Presen
 3. **TDD-First** — Tests before implementation. Coverage is the primary quality signal.
 4. **Trunk-Based** — Single main branch, short-lived branches, feature flags.
 5. **YAGNI/KISS** — Build the minimum. Refactor only on second similar case.
+6. **Custom** — Describe your own methodology in free text.
 
-The developer selects exactly one approach. Save the selection as `{{approach}}` in the confirmed configuration. The selected approach will generate a "Development Approach" section in the project's CLAUDE.md.
+The developer may select **1 to 3 approaches**. When selecting multiple approaches, the **first selected is the primary** — it sets the overall cadence and phase structure. Additional approaches layer their rules on top.
+
+**Conflict matrix — incompatible pairs:**
+
+| Pair | Reason |
+|------|--------|
+| Iterative + Shape Up | Cycle cadence conflict: 1-3 days vs 6 weeks |
+
+If the developer selects an incompatible pair, warn them and ask to drop one or confirm they understand the conflict. Do not block — the developer has final say.
+
+**Custom approach handling:** If the developer selects "Custom", ask them to describe their methodology in free text. Delegate the description to the `system-architect` agent, which will extract structured approach content (philosophy, rules, phase structure) matching the format of the 5 standard approaches. Present the extracted content for developer approval before proceeding. The custom approach is stored under `## Custom` in `docs/approaches-reference.md`.
+
+Save the selection as `{{approach}}` (primary) and `{{secondaryApproaches}}` (array, may be empty) in the confirmed configuration. Custom approach uses `"Custom"` as the name. Both generate "Development Approach" sections in the project's CLAUDE.md — the primary first, then secondary approaches under a "Secondary Approaches" subheading.
 
 If the developer wants to skip approach selection, proceed without it — the approach section will not be generated. The approach can be changed later at any time using `/setup-approach` without re-running the full setup.
 

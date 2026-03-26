@@ -4,8 +4,8 @@
 
 ### v0.4
 - [x] `/setup-approach` skill — standalone approach reconfiguration without re-running /setup-agents
-- [ ] Multi-approach composition — selecting 2-3 approaches with conflict resolution
-- [ ] Custom approach (free text) — describe methodology, system architect extracts config
+- [x] Multi-approach composition — selecting 2-3 approaches with conflict resolution
+- [x] Custom approach (free text) — describe methodology, system architect extracts config
 
 ---
 
