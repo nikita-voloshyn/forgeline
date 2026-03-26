@@ -8,7 +8,7 @@ From vision to a fully configured Claude Code workspace — in minutes, not hour
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://github.com/nikita-voloshyn/forgeline)
-[![Version](https://img.shields.io/badge/version-0.3.0--beta-orange)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-0.4.0--beta-orange)](CHANGELOG.md)
 [![Status](https://img.shields.io/badge/status-beta-orange)](CHANGELOG.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
 
