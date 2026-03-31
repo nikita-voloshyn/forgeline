@@ -99,7 +99,7 @@ If the confirmed configuration includes an `approach` selection (from Step 2 of 
 1. Render each secondary approach template the same way
 2. Concatenate the rendered contents (separated by `---`)
 3. Pass the concatenated result as `{{secondaryApproachContent}}` to `templates/CLAUDE.md.hbs`
-4. The template inserts secondary approaches under a "Secondary Approaches" subheading with a precedence note
+4. The template inserts secondary approaches under a `### Secondary Approaches` subheading (exact heading — no approach name in the heading) with a precedence note
 
 Approach slug mapping:
 - "Iterative + Timeboxing" → `iterative.md.hbs`
