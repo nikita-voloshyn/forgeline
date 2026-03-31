@@ -56,10 +56,23 @@ Change the development approach for {{projectName}} without re-running the full 
 
    The developer may select 1 to 3 approaches. The first selected is the **primary** (sets cadence and phase structure). Additional selections are secondary (layer rules on top).
 
-   **Conflict check:** If the developer selects Iterative + Shape Up together, warn:
-   > "Iterative (1-3 day cycles) and Shape Up (6-week cycles) have conflicting cadences. Drop one, or confirm to proceed with awareness of the conflict."
+   Wait for the developer to select. Do NOT proceed to Step 3a until they respond.
 
-   Wait for the developer to select.
+3a. **Conflict check** (run this before anything else after the developer selects)
+
+   Check the selected combination against the conflict matrix:
+
+   | Pair | Conflict |
+   |------|----------|
+   | Iterative + Timeboxing + Shape Up | Cadence conflict: 1-3 day cycles vs 6-week cycles |
+
+   If the developer selected a conflicting pair, you MUST stop and warn before proceeding:
+
+   > "⚠️ Conflict: Iterative + Timeboxing (1-3 day cycles) and Shape Up (6-week cycles) have incompatible cadences. Please drop one, or type 'confirm' to proceed anyway with awareness of the conflict."
+
+   Wait for the developer to respond. Do NOT proceed to Step 4 until they either drop an approach or explicitly confirm the conflict. This is a hard gate.
+
+   If no conflict: proceed to Step 4 immediately.
 
 4. **Confirm change**
 
@@ -95,7 +108,8 @@ Change the development approach for {{projectName}} without re-running the full 
    - If no approach section exists: insert before the `## Development Workflow` section. If that section does not exist, append at the end of the file.
 
    **Secondary approaches (if any):**
-   - After the primary approach content, add a `### Secondary Approaches` subsection with a precedence note: "The following approaches layer additional rules on top of the primary approach above. Where rules conflict, the primary approach takes precedence."
+   - After the primary approach content, add a subsection with this exact heading: `### Secondary Approaches` (plural, no approach names in the heading — never `### Secondary Approach: <name>`).
+   - Follow the heading with this exact precedence note: "The following approaches layer additional rules on top of the primary approach above. Where rules conflict, the primary approach takes precedence."
    - Insert each secondary approach's content from the reference file, separated by `---`.
    - If no secondary approaches were selected, remove the `### Secondary Approaches` subsection if it exists.
 
@@ -119,6 +133,8 @@ Change the development approach for {{projectName}} without re-running the full 
 - Only modify `CLAUDE.md`. Do not touch any other files.
 - Use the content from `docs/approaches-reference.md` verbatim. Do not summarize or rephrase.
 - Always confirm before making changes. This is a hard gate.
+- The secondary approaches heading is ALWAYS `### Secondary Approaches` — never `### Secondary Approach: <name>` or any other variation.
+- The conflict check (Step 3a) is a hard gate. Never skip it, never proceed to Step 4 without completing it first.
 - Maximum 3 approaches total (1 primary + up to 2 secondary).
 - If `CLAUDE.md` does not exist, stop and suggest running `/setup-agents` first.
 - If `docs/approaches-reference.md` does not exist, stop and suggest running `/setup-agents` first.
