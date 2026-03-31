@@ -2,10 +2,7 @@
 
 ## Active
 
-### v0.4
-- [x] `/setup-approach` skill — standalone approach reconfiguration without re-running /setup-agents
-- [x] Multi-approach composition — selecting 2-3 approaches with conflict resolution
-- [x] Custom approach (free text) — describe methodology, system architect extracts config
+_No active tasks._
 
 ---
 
@@ -20,6 +17,9 @@
 
 ## Done
 
+- [x] `/setup-approach` skill — standalone approach reconfiguration (v0.4, PR #7)
+- [x] Multi-approach composition — selecting 2-3 approaches with conflict resolution (v0.4, PR #7)
+- [x] Custom approach (free text) — describe methodology, system architect extracts config (v0.4, PR #7)
 - [x] Documentation agent + `/docs` skill + Context7 compliance fix (v0.4, PR #6)
 - [x] Task orchestration pipeline: `/plan` → `/dispatch` → `/execute` (v0.3.0-beta)
 - [x] Development Approach selection (Step 2 in dialogue)

@@ -10,7 +10,7 @@
     {
       "name": "forgeline",
       "description": "Scaffold a production-ready multi-agent Claude Code development system for any project from its vision and tech stack.",
-      "version": "0.2.0-beta",
+      "version": "0.4.0-beta",
       "author": {
         "name": "nikita-voloshyn",
         "url": "https://github.com/nikita-voloshyn"
