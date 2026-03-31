@@ -265,7 +265,7 @@ Contains: deny permissions, hooks reference, environment variables.
 
 ```json
 {
-  "$schema": "https://json-schema.store/claude-code-settings.json",
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "permissions": {
     "deny": [
       "Read(.env)",
