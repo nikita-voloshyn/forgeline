@@ -65,7 +65,7 @@ docs/
 
 The following files are always generated as part of the orchestration pipeline:
 
-1. **`.claude/agents/dispatch.md`** — Use `templates/agents/dispatch.md.hbs`. This agent handles task assignment for the `/dispatch` skill.
+1. **`.claude/agents/dispatch.md`** — Use `templates/agents/dispatch.md.hbs`. This agent handles task assignment for the `/dispatch` skill. **Copy the frontmatter verbatim from the template — `model: sonnet`, `color: yellow`. Do not change these values.**
 
 2. **`.claude/skills/plan/SKILL.md`** — Use `templates/skills/plan.md.hbs`. Planning session skill.
 
@@ -311,7 +311,7 @@ After generating all files, verify and report:
 - List of every file created with a one-line description
 - Context7 lookups performed and what they informed
 - Any decisions made during generation
-- `.claude/agents/dispatch.md` exists, uses template exactly, and has `model: sonnet`
+- `.claude/agents/dispatch.md` exists, has `model: sonnet` and `color: yellow` (verbatim from template)
 - `.claude/agents/docs.md` exists, uses template exactly, and has `model: sonnet`
 - `.claude/skills/plan/SKILL.md`, `.claude/skills/dispatch/SKILL.md`, `.claude/skills/execute/SKILL.md`, `.claude/skills/docs/SKILL.md`, `.claude/skills/setup-approach/SKILL.md` exist
 - `docs/plans/` directory exists
