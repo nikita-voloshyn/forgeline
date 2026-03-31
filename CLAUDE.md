@@ -25,7 +25,7 @@ forgeline/
 │   └── setup-agents/
 │       └── SKILL.md             — main skill, runs the 8-step dialogue
 ├── hooks/
-│   └── hooks.json               — internal plugin hooks
+│   └── hooks.json               — internal Forgeline plugin hooks (not the generation output)
 ├── templates/                   — Handlebars templates for generated files
 │   ├── agents/                  — agent-specific templates (dispatch, docs)
 │   ├── skills/                  — skill-specific templates
