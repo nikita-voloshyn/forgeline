@@ -179,6 +179,21 @@ description: "<what it does and when to use it — include trigger keywords>"
 1. ...
 ```
 
+## Package Scripts Priority
+
+When generating skill content and agent verification commands, **always prefer the project's own `package.json` scripts over raw CLI commands.** Read `package.json` and extract the `scripts` block before generating any command references.
+
+**Resolution order:**
+1. If the project has a matching script (e.g., `"test:e2e"`, `"db:push"`, `"lint"`), use `<package-manager> <script>` (e.g., `pnpm test:e2e`)
+2. For flags/args not covered by a script, append them after `--`: `pnpm test:e2e -- --headed`
+3. Only fall back to `npx <tool>` or `<package-manager> exec <tool>` for tools that are devDependencies but have no script
+4. Never generate `pnpm <tool> <args>` for tools that are devDependencies — that syntax is invalid. Use `npx <tool>` or `pnpm exec <tool>` instead.
+
+**Common cases:**
+- `@playwright/test` devDependency, script `"test:e2e": "playwright test"` → use `pnpm test:e2e`, `pnpm test:e2e -- --headed`, `npx playwright install`
+- `prisma` devDependency, script `"db:push": "prisma db push"` → use `pnpm db:push`; for commands without scripts use `npx prisma migrate dev`
+- `vitest` devDependency, script `"test": "vitest"` → use `pnpm vitest run` for CI (run mode), `pnpm test` for watch mode
+
 ## Linter/Formatter Detection
 
 Detect the primary linter by checking config files in the target project. Use the first match:
@@ -307,10 +322,10 @@ Contains: allow permissions, MCP server configurations.
 
 ## Verification
 
-After generating all files, verify and report:
-- List of every file created with a one-line description
-- Context7 lookups performed and what they informed
-- Any decisions made during generation
+Verification runs in two phases: structural checks, then a Context7 content audit. Fix any issues found before reporting.
+
+### Phase 1 — Structural checks
+
 - `.claude/agents/dispatch.md` exists, has `model: sonnet` and `color: yellow` (verbatim from template)
 - `.claude/agents/docs.md` exists, uses template exactly, and has `model: sonnet`
 - `.claude/skills/plan/SKILL.md`, `.claude/skills/assign/SKILL.md`, `.claude/skills/execute/SKILL.md`, `.claude/skills/docs/SKILL.md`, `.claude/skills/setup-approach/SKILL.md` exist
@@ -320,3 +335,59 @@ After generating all files, verify and report:
 - If approach was selected: CLAUDE.md contains a "Development Approach" section
 - CLAUDE.md contains a "Development Workflow" section
 - `.gitignore` contains `.claude/settings.local.json`
+
+### Phase 2 — Context7 content audit
+
+Run this audit after all files are written. It has two parts.
+
+#### Part A: Package scripts alignment
+
+1. Read `package.json` (or `Cargo.toml` / `pyproject.toml` for non-JS stacks) and extract all defined scripts.
+2. Collect every shell command from every generated file: agent `## Verification` blocks and all `bash` code blocks in skill files.
+3. For each collected command, check:
+   - Does it invoke a devDependency tool directly via `pnpm <tool>`? (invalid — pnpm does not proxy devDependency binaries as subcommands)
+   - Does the project have a script for this operation? If yes, the command must use `<package-manager> <script>`, with extra flags passed after `--`.
+   - If no script exists, the command must use `npx <tool>` or `<package-manager> exec <tool>`.
+4. Rewrite any non-conforming commands in-place before proceeding.
+
+**Common violations to catch:**
+- `pnpm playwright test` → `pnpm test:e2e` (if script exists) or `npx playwright test`
+- `pnpm vitest run` → valid only if `vitest` is in PATH via pnpm bin; prefer `pnpm test -- --run` if `"test": "vitest"` script exists
+- `npx prisma db push` when `"db:push": "prisma db push"` script exists → `pnpm db:push`
+- `npx prisma generate` when `"db:generate": "prisma generate"` script exists → `pnpm db:generate`
+
+#### Part B: Framework pattern verification via Context7
+
+Using the stack you detected during generation and the commands you wrote into the generated files, decide which libraries are worth auditing and what to ask.
+
+**Step 1 — Build the audit list**
+
+From the stack you already know, select every library that satisfies both conditions:
+- It is present in the project (in dependencies, devDependencies, Cargo.toml, pyproject.toml, go.mod, etc.)
+- At least one command, API call, or code pattern referencing it appears in a generated agent or skill file
+
+For each selected library, determine:
+- The specific question to ask Context7, derived from what you actually wrote (e.g. you wrote `npx prisma migrate dev` → ask "prisma migrate dev CLI syntax and flags"; you wrote `auth()` in a Route Handler → ask "NextAuth v5 auth() helper Route Handler session pattern")
+- Which generated file(s) contain the pattern to verify
+
+**Step 2 — Run Context7 queries**
+
+For each library in the audit list:
+1. Call `resolve-library-id` with the library name
+2. Select the result with the highest benchmark score and High reputation
+3. Call `query-docs` with the resolved ID and the specific question from Step 1
+4. Compare the returned documentation against what is written in the generated file
+
+**Step 3 — Fix discrepancies**
+
+If the documentation contradicts what you wrote, update the generated file to match the current documented pattern. Apply Part A script-alignment rules at the same time (prefer package.json scripts over raw CLI where available).
+
+**Scope limit:** audit only libraries where you wrote concrete commands or API patterns. Do not query libraries used only as type imports or passive dependencies. Keep the audit focused — 3 to 8 libraries is typical.
+
+### Final report
+
+After both phases complete, report:
+- List of every file created with a one-line description
+- Commands that were corrected during Phase 2 (before → after)
+- Context7 lookups performed and what each one confirmed or corrected
+- Any remaining decisions or trade-offs made during generation
