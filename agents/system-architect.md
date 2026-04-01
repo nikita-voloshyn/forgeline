@@ -179,6 +179,21 @@ description: "<what it does and when to use it — include trigger keywords>"
 1. ...
 ```
 
+## Package Scripts Priority
+
+When generating skill content and agent verification commands, **always prefer the project's own `package.json` scripts over raw CLI commands.** Read `package.json` and extract the `scripts` block before generating any command references.
+
+**Resolution order:**
+1. If the project has a matching script (e.g., `"test:e2e"`, `"db:push"`, `"lint"`), use `<package-manager> <script>` (e.g., `pnpm test:e2e`)
+2. For flags/args not covered by a script, append them after `--`: `pnpm test:e2e -- --headed`
+3. Only fall back to `npx <tool>` or `<package-manager> exec <tool>` for tools that are devDependencies but have no script
+4. Never generate `pnpm <tool> <args>` for tools that are devDependencies — that syntax is invalid. Use `npx <tool>` or `pnpm exec <tool>` instead.
+
+**Common cases:**
+- `@playwright/test` devDependency, script `"test:e2e": "playwright test"` → use `pnpm test:e2e`, `pnpm test:e2e -- --headed`, `npx playwright install`
+- `prisma` devDependency, script `"db:push": "prisma db push"` → use `pnpm db:push`; for commands without scripts use `npx prisma migrate dev`
+- `vitest` devDependency, script `"test": "vitest"` → use `pnpm vitest run` for CI (run mode), `pnpm test` for watch mode
+
 ## Linter/Formatter Detection
 
 Detect the primary linter by checking config files in the target project. Use the first match:
