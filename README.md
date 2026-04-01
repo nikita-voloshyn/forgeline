@@ -2,17 +2,12 @@
 
 # ⚒️ Forgeline
 
-**Scaffold a production-ready multi-agent development system for any project**
-
-From vision to a fully configured Claude Code workspace — in minutes, not hours.
+**Scaffold a production-ready multi-agent AI development system for any project — in minutes.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://github.com/nikita-voloshyn/forgeline)
-[![Version](https://img.shields.io/badge/version-0.4.0--beta-orange)](CHANGELOG.md)
-[![Status](https://img.shields.io/badge/status-beta-orange)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/version-1.0.0-blue)](CHANGELOG.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](CONTRIBUTING.md)
-
-<sub>Beta — core dialogue, agent architecture, and templates are in place. Expect breaking changes before v1.0.</sub>
 
 [Report Bug](https://github.com/nikita-voloshyn/forgeline/issues/new?template=bug_report.md) · [Request Feature](https://github.com/nikita-voloshyn/forgeline/issues/new?template=feature_request.md) · [Contributing](CONTRIBUTING.md)
 
@@ -20,20 +15,9 @@ From vision to a fully configured Claude Code workspace — in minutes, not hour
 
 ---
 
-## ✨ What It Does
+## What is Forgeline?
 
-Forgeline reads your project files, runs an interactive 8-step dialogue, and generates a complete multi-agent system tailored to your stack:
-
-- **🤖 Specialized Agents** — domain agents (backend, frontend, testing, ops) with strict boundaries
-- **⚡ Task Orchestration** — `/plan` → `/assign` → `/execute` pipeline for structured feature development
-- **🧭 Development Approach** — choose Iterative, Shape Up, TDD, Trunk-Based, or YAGNI
-- **🛠️ Custom Skills** — `/check`, `/changelog`, `/phase`, `/deploy-check` + stack-specific commands
-- **🔌 Plugins** — Context7 always included, others recommended per stack
-- **🪝 Hooks** — auto-linting on save, safety scans on stop
-- **🔐 Permissions** — allow/deny pre-configured, ready to extend
-- **📖 Full Docs** — `agentic-system.md`, `development-plan.md`, `commands.md` auto-generated
-
-### Without Forgeline vs With Forgeline
+Forgeline is a plugin for Claude Code that builds a complete AI development system for your project. You run one command, answer 8 questions, and it generates 50+ files: specialized AI agents for each part of your codebase, workflow commands, documentation, and a structured task pipeline — tailored to your tech stack.
 
 ```
 ❌ Manually read project files              ✅ /setup-agents
@@ -45,83 +29,115 @@ Forgeline reads your project files, runs an interactive 8-step dialogue, and gen
 
 ---
 
-## 🚀 Quick Start
+## What is Claude Code?
+
+Claude Code is a terminal-based AI coding assistant made by Anthropic. It runs in your project directory and can read, write, and reason about your entire codebase.
+
+[Official Claude Code documentation →](https://docs.anthropic.com/en/docs/claude-code)
+
+---
+
+## Prerequisites
+
+- **Claude Code** installed and running ([installation guide](https://docs.anthropic.com/en/docs/claude-code/getting-started))
+- An active **Claude subscription** (Claude Code requires a Claude account)
+- A **project directory** — any existing codebase, or an empty folder
+
+No build tools needed. Forgeline is a pure Claude Code plugin — no Node.js, no compilation.
+
+---
+
+## Installation
+
+Run these commands inside Claude Code (not in a terminal shell):
 
 ```bash
-# 1. Install the plugin
+# Add the plugin from the marketplace (downloads it to your local Claude Code)
 /plugin marketplace add nikita-voloshyn/forgeline
+
+# Activate it in your current session
 /plugin install nikita-voloshyn/forgeline
-
-# 2. Navigate to any project and run
-/setup-agents
-
-# 3. After setup, use orchestration for feature development
-/plan       # Decompose a feature into tasks
-/assign     # Assign agents to tasks, review and approve
-/execute    # Execute tasks one by one with verification
 ```
 
 ---
 
-## 🏗️ Architecture
+## Your first run
 
-Forgeline follows a strict **skill + agent** separation:
+Navigate to your project directory and run `/setup-agents`.
 
-### Setup Phase
+Forgeline starts by reading your project files and confirming what it found:
 
-```mermaid
-flowchart LR
-    User -->|/setup-agents| Skill[🎯 Setup Agents Skill]
-    Skill -->|8-step dialogue| User
-    Skill -->|confirmed config| Agent[🧠 System Architect]
-    Agent -->|Context7| C7[📚 Best Practices]
-    Agent -->|templates/| T[📄 Handlebars Templates]
-    Agent -->|generates| Output[📦 .claude/ workspace]
+```
+Step 1 — Project Understanding
+──────────────────────────────
+Project: my-saas-app
+Type: Web application
+Languages: TypeScript
+Frameworks: Next.js 14, Prisma, PostgreSQL
+Package manager: pnpm
+
+Is this correct? [yes / correct it]
 ```
 
-### Development Phase
+Steps 2–7 follow the same pattern — Forgeline proposes, you confirm or adjust:
+approach → agents → skills → plugins → hooks → permissions.
 
-```mermaid
-flowchart LR
-    Plan[📋 /plan<br/>Feature → Tasks] -->|task list| Assign[🎯 /assign<br/>Tasks → Agents]
-    Assign -->|approved assignments| Execute[▶️ /execute<br/>Run & Verify]
-    Execute -->|report| Done[✅ docs/plans/report.md]
+Step 8 shows everything at once before writing a single file:
+
+```
+Step 8 — Confirm
+────────────────
+Approach: Iterative + Timeboxing
+Agents: backend, frontend, database, testing, infra
+Skills: /check, /changelog, /plan, /assign, /execute, /docs, /setup-approach ...
+Hooks: Biome auto-lint on save, secrets scan on stop
+Permissions: allow pnpm/git/gh pr, deny .env/secrets
+
+Generate? [yes / change]
 ```
 
-| Component | Role | Model |
-|-----------|------|-------|
-| `/setup-agents` skill | Interactive dialogue, user confirmation | runs in user session |
-| `system-architect` agent | File analysis, Context7 lookups, generation | opus |
-| `dispatch` agent | Task assignment within orchestration pipeline | generated per-project |
-| `docs` agent | Documentation coverage — audit, update, status | generated per-project |
-| `templates/` | Source of truth for all generated content | Handlebars |
+After confirming, the `system-architect` agent reads your files, queries current best-practice documentation via Context7, and generates ~50+ files. **Nothing is written until Step 8.**
 
 ---
 
-## 📥 Input Files
+## After setup — the development loop
 
-Forgeline auto-detects your project from these files:
+Once your workspace is generated, use the three-step pipeline for any new feature:
 
-| Priority | Files |
-|----------|-------|
-| 🥇 Primary | `vision.md` + `tech-stack.md` |
-| 🥈 Fallback | `README.md`, `package.json`, `Cargo.toml`, `pyproject.toml`, etc. |
+```
+/plan "Add user authentication with GitHub OAuth"
+      → Decomposes the feature into tasks with domain assignments
+      → Creates docs/plans/auth-plan.md
+
+/assign
+      → Review and approve which agent handles each task
+      → Creates docs/plans/auth-dispatch.md
+
+/execute
+      → Runs each task in sequence, one agent per task
+      → Verifies before proceeding to the next
+      → Creates docs/plans/auth-report.md
+```
+
+All artifacts are saved in `docs/plans/` — you can resume mid-pipeline across sessions.
 
 ---
 
-## 📦 What Gets Generated
+## 📦 What gets generated
+
+After Step 8, the `system-architect` agent generates these files directly into your project:
 
 ```
 .claude/
 ├── 🔧 settings.json              — plugins, hooks, deny permissions
 └── 🔐 settings.local.json        — allow permissions, MCP servers
 
-agents/
+.claude/agents/
 ├── 🤖 *.md                       — domain agents (backend, frontend, testing, etc.)
 ├── 🎯 dispatch.md                — task assignment agent
 └── 📖 docs.md                    — documentation coverage agent
 
-skills/*/SKILL.md                  — /check, /changelog, /phase, /deploy-check,
+.claude/skills/*/SKILL.md         — /check, /changelog, /phase, /deploy-check,
                                      /plan, /assign, /execute, /docs,
                                      /setup-approach, + stack-specific
 
@@ -152,6 +168,58 @@ Forgeline walks you through 8 steps before generating anything:
 | **6** | 🪝 Hooks | PostToolUse linting + Stop safety scan |
 | **7** | 🔐 Permissions | allow/deny pre-filled — you extend |
 | **8** | ✅ Final Confirmation | Full summary before generation |
+
+---
+
+## 📥 Input Files
+
+Forgeline auto-detects your project from these files:
+
+| Priority | Files |
+|----------|-------|
+| 🥇 Primary | `vision.md` + `tech-stack.md` |
+| 🥈 Fallback | `README.md`, `package.json`, `Cargo.toml`, `pyproject.toml`, etc. |
+
+For best results, add a `vision.md` (what your project is and who it's for) and a `tech-stack.md` (languages, frameworks, tooling). See `tests/fixture/` in this repo for an example.
+
+---
+
+## How it works under the hood
+
+Forgeline separates concerns cleanly: the skill handles the dialogue, the agent handles all file reading, analysis, and generation. Nothing is written until you confirm in Step 8.
+
+### Setup Phase
+
+```mermaid
+flowchart LR
+    User -->|/setup-agents| Skill[🎯 Setup Agents Skill]
+    Skill -->|8-step dialogue| User
+    Skill -->|confirmed config| Agent[🧠 System Architect]
+    Agent -->|Context7| C7[📚 Best Practices]
+    Agent -->|templates/| T[📄 Handlebars Templates]
+    Agent -->|generates| Output[📦 .claude/ workspace]
+```
+
+The skill never writes files — it only gathers configuration and hands it to the agent.
+
+### Development Phase
+
+```mermaid
+flowchart LR
+    Plan[📋 /plan<br/>Feature → Tasks] -->|task list| Assign[🎯 /assign<br/>Tasks → Agents]
+    Assign -->|approved assignments| Execute[▶️ /execute<br/>Run & Verify]
+    Execute -->|report| Done[✅ docs/plans/report.md]
+```
+
+Each plan is a markdown file you can read, edit, or discard at any point.
+
+| Component | Role | Model |
+|-----------|------|-------|
+| `/setup-agents` skill | Interactive dialogue, user confirmation | runs in user session |
+| `system-architect` agent | File analysis, Context7 lookups, generation | opus |
+| `dispatch` agent | Task assignment within orchestration pipeline | generated per-project |
+| `docs` agent | Documentation coverage — audit, update, status | generated per-project |
+| `templates/` | Source of truth for all generated content | Handlebars |
 
 ---
 

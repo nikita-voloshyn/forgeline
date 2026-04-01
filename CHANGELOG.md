@@ -6,6 +6,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.0] — 2026-04-01
+
+First stable release. All v0.x features are included and considered stable. Beta designation removed.
+
+### Summary
+
+- 8-step configuration dialogue (`/setup-agents`) — reads project files, proposes agents, skills, plugins, hooks, and permissions
+- 22 Handlebars templates across agents, skills, approaches, and docs
+- Task orchestration pipeline: `/plan` → `/assign` → `/execute`
+- 5 development approaches (Iterative, Shape Up, TDD, Trunk-Based, YAGNI) + Custom
+- Multi-approach composition (up to 3) with conflict detection
+- `/setup-approach` — change approach without re-running setup
+- Documentation agent + `/docs` skill for ongoing doc coverage
+- `docs/approaches-reference.md` — approach switcher reference file
+
+### Changed
+
+- Version bumped from 0.4.0-beta to 1.0.0
+- Beta status removed from README and plugin manifests
+
 ## [0.4.0-beta] — 2026-03-26
 
 ### Added
@@ -66,7 +86,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Removed `skills` field from `plugin.json` — auto-discovery at `skills/*/SKILL.md` works without it
 - Added `marketplace.json` to fix `/plugin marketplace add` failing silently
 
-[Unreleased]: https://github.com/nikita-voloshyn/forgeline/compare/v0.4.0-beta...HEAD
+[Unreleased]: https://github.com/nikita-voloshyn/forgeline/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/nikita-voloshyn/forgeline/compare/v0.4.0-beta...v1.0.0
 [0.4.0-beta]: https://github.com/nikita-voloshyn/forgeline/compare/v0.3.0-beta...v0.4.0-beta
 [0.3.0-beta]: https://github.com/nikita-voloshyn/forgeline/compare/v0.2.0-beta...v0.3.0-beta
 [0.2.0-beta]: https://github.com/nikita-voloshyn/forgeline/compare/v0.1.0-beta...v0.2.0-beta

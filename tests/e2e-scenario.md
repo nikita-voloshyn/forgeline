@@ -1,4 +1,4 @@
-# E2E Test Scenario — Forgeline v0.4.0-beta
+# E2E Test Scenario — Forgeline v1.0.0
 
 End-to-end test using the `tests/fixture/` project (TaskForge — Next.js + TypeScript + Prisma).
 
