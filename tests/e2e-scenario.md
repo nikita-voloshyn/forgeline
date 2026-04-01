@@ -97,7 +97,7 @@ Each agent should have a `color` field.
 - [x] `/phase` — phase executor (backward-compat)
 - [x] `/deploy-check` — pre-deployment audit
 - [x] `/plan` — feature planning
-- [x] `/dispatch` — task assignment
+- [x] `/assign` — task assignment
 - [x] `/execute` — guided execution
 - [x] `/docs` — documentation coverage
 - [x] `/setup-approach` — approach reconfiguration
@@ -185,7 +185,7 @@ ls agents/*.md | wc -l  # Should be >= 4 (backend + frontend + testing + dispatc
 [ -f skills/phase/SKILL.md ]          || echo "FAIL: /phase"
 [ -f skills/deploy-check/SKILL.md ]   || echo "FAIL: /deploy-check"
 [ -f skills/plan/SKILL.md ]           || echo "FAIL: /plan"
-[ -f skills/dispatch/SKILL.md ]       || echo "FAIL: /dispatch"
+[ -f skills/assign/SKILL.md ]         || echo "FAIL: /assign"
 [ -f skills/execute/SKILL.md ]        || echo "FAIL: /execute"
 [ -f skills/docs/SKILL.md ]           || echo "FAIL: /docs"
 [ -f skills/setup-approach/SKILL.md ] || echo "FAIL: /setup-approach"
