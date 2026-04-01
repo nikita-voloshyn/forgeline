@@ -55,7 +55,7 @@ Feature development follows a structured pipeline:
 
 ```mermaid
 flowchart LR
-    Plan["/plan"] --> Dispatch["/dispatch"]
+    Plan["/plan"] --> Dispatch["/assign"]
     Dispatch --> Review{"Developer\nreview"}
     Review -->|approve| Execute["/execute"]
     Review -->|change| Dispatch
@@ -63,7 +63,7 @@ flowchart LR
 ```
 
 1. **`/plan`** — Collaboratively decompose a feature into tasks with domain assignments
-2. **`/dispatch`** — Assign agents and skills to each task, review and approve
+2. **`/assign`** — Assign agents and skills to each task, review and approve
 3. **`/execute`** — Execute tasks sequentially, verify each, produce report
 
 All artifacts are saved in `docs/plans/` as an audit trail. Each skill is opt-in.

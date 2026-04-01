@@ -98,7 +98,7 @@ Always include the standard set. Add stack-specific skills when relevant tooling
 - `/phase` — phase-level feature executor (backward-compat wrapper)
 - `/deploy-check` — pre-deployment audit
 - `/plan` — plan a feature: decompose into tasks with domain assignments
-- `/dispatch` — assign agents and skills to a plan's tasks
+- `/assign` — assign agents and skills to a plan's tasks
 - `/execute` — execute an approved dispatch plan task by task
 - `/docs` — maintain documentation coverage: audit components, update docs, check status
 - `/setup-approach` — change the development approach without re-running /setup-agents
@@ -174,10 +174,10 @@ Ask if there are additional commands to allow (docker, terraform, aws, kubectl, 
 
 ## Step 8 — Final Confirmation
 
-Present the complete system summary in a single block covering: selected approach, all agents (including dispatch and docs), all skills (including plan/dispatch/execute/docs), plugins, hooks, and permissions.
+Present the complete system summary in a single block covering: selected approach, all agents (including dispatch and docs), all skills (including plan/assign/execute/docs), plugins, hooks, and permissions.
 
 Include a brief description of the development workflow:
-> After generation, use `/plan` to start a feature, `/dispatch` to assign agents, and `/execute` to run the plan. All artifacts are saved in `docs/plans/`.
+> After generation, use `/plan` to start a feature, `/assign` to assign agents, and `/execute` to run the plan. All artifacts are saved in `docs/plans/`.
 
 Ask:
 
