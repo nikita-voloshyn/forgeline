@@ -11,7 +11,7 @@ Forgeline is a Claude Code plugin — there is no build step. You install it via
 ```
 .claude-plugin/plugin.json   — plugin manifest
 agents/system-architect.md   — Opus agent that reads + generates
-skills/setup-agents/SKILL.md — main skill, runs the 7-step dialogue
+skills/setup-agents/SKILL.md — main skill, runs the 8-step dialogue
 hooks/hooks.json             — internal hooks
 templates/                   — Handlebars templates for generated files
 docs/                        — documentation and specs
@@ -38,23 +38,34 @@ Templates live in `templates/` and use [Handlebars](https://handlebarsjs.com/) s
 
 ### Expected Templates
 
-Per the [design spec](docs/specs/2026-03-22-forgeline-design.md):
-
 | Template | Generates |
 |----------|-----------|
-| `CLAUDE.md.hbs` | Architecture rules for target project |
-| `agent.md.hbs` | Agent definition (one per agent) |
+| `CLAUDE.md.hbs` | Architecture rules + approach sections for target project |
+| `agent.md.hbs` | Agent definition (one per domain agent) |
 | `agentic-system.md.hbs` | Full system docs with Mermaid diagrams |
-| `development-plan.md.hbs` | Phase tracker |
+| `development-plan.md.hbs` | Phase tracker (adapts to selected approach) |
 | `commands.md.hbs` | Command reference |
-| `skills/check.md.hbs` | `/check` skill |
-| `skills/changelog.md.hbs` | `/changelog` skill |
-| `skills/phase.md.hbs` | `/phase` skill |
-| `skills/deploy-check.md.hbs` | `/deploy-check` skill |
+| `skills/check.md.hbs` | `/check` quality pipeline |
+| `skills/changelog.md.hbs` | `/changelog` session changelog |
+| `skills/phase.md.hbs` | `/phase` feature executor |
+| `skills/deploy-check.md.hbs` | `/deploy-check` pre-deployment audit |
+| `skills/plan.md.hbs` | `/plan` feature decomposition |
+| `skills/assign.md.hbs` | `/assign` task-to-agent assignments |
+| `skills/execute.md.hbs` | `/execute` task runner with resume |
+| `skills/docs.md.hbs` | `/docs` documentation coverage |
+| `skills/setup-approach.md.hbs` | `/setup-approach` approach switcher |
+| `agents/dispatch.md.hbs` | Dispatch agent (task orchestration) |
+| `agents/docs.md.hbs` | Docs agent (documentation coverage) |
+| `approaches/iterative.md.hbs` | Iterative + Timeboxing approach content |
+| `approaches/shape-up.md.hbs` | Shape Up approach content |
+| `approaches/tdd.md.hbs` | TDD-First approach content |
+| `approaches/trunk-based.md.hbs` | Trunk-Based approach content |
+| `approaches/yagni.md.hbs` | YAGNI/KISS approach content |
+| `approaches-reference.md.hbs` | All 5 approaches in one reference file |
 
 ### Key Variables
 
-Templates receive the confirmed configuration from the 7-step dialogue:
+Templates receive the confirmed configuration from the 8-step dialogue:
 
 - `{{projectName}}` — target project name
 - `{{projectDescription}}` — one-line project description
