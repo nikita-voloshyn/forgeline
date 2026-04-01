@@ -1,6 +1,6 @@
 ---
 name: execute
-description: "Execute an approved dispatch plan task by task, producing docs/plans/<feature>-report.md. Run after /dispatch."
+description: "Execute an approved dispatch plan task by task, producing docs/plans/<feature>-report.md. Run after /assign."
 version: 0.1.0
 ---
 
@@ -14,7 +14,7 @@ Execute an approved dispatch plan for {{projectName}}.
 
    List files in `docs/plans/` matching `*-dispatch.md`.
 
-   - If none found: tell the developer no dispatch files exist and suggest running `/dispatch` first. Stop.
+   - If none found: tell the developer no dispatch files exist and suggest running `/assign` first. Stop.
    - If exactly one found: use it.
    - If multiple found: list them and ask the developer which dispatch to execute. Wait for a response.
 
@@ -22,7 +22,7 @@ Execute an approved dispatch plan for {{projectName}}.
 
    Read the selected dispatch file. Check that `Status:` is `Approved`.
 
-   If not approved, tell the developer the dispatch has not been approved and suggest running `/dispatch` to complete the approval gate. Stop.
+   If not approved, tell the developer the dispatch has not been approved and suggest running `/assign` to complete the approval gate. Stop.
 
 3. **Resume mechanism**
 

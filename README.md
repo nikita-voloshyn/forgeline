@@ -25,7 +25,7 @@ From vision to a fully configured Claude Code workspace — in minutes, not hour
 Forgeline reads your project files, runs an interactive 8-step dialogue, and generates a complete multi-agent system tailored to your stack:
 
 - **🤖 Specialized Agents** — domain agents (backend, frontend, testing, ops) with strict boundaries
-- **⚡ Task Orchestration** — `/plan` → `/dispatch` → `/execute` pipeline for structured feature development
+- **⚡ Task Orchestration** — `/plan` → `/assign` → `/execute` pipeline for structured feature development
 - **🧭 Development Approach** — choose Iterative, Shape Up, TDD, Trunk-Based, or YAGNI
 - **🛠️ Custom Skills** — `/check`, `/changelog`, `/phase`, `/deploy-check` + stack-specific commands
 - **🔌 Plugins** — Context7 always included, others recommended per stack
@@ -57,7 +57,7 @@ Forgeline reads your project files, runs an interactive 8-step dialogue, and gen
 
 # 3. After setup, use orchestration for feature development
 /plan       # Decompose a feature into tasks
-/dispatch   # Assign agents to tasks, review and approve
+/assign     # Assign agents to tasks, review and approve
 /execute    # Execute tasks one by one with verification
 ```
 
@@ -83,8 +83,8 @@ flowchart LR
 
 ```mermaid
 flowchart LR
-    Plan[📋 /plan<br/>Feature → Tasks] -->|task list| Dispatch[🎯 /dispatch<br/>Tasks → Agents]
-    Dispatch -->|approved assignments| Execute[▶️ /execute<br/>Run & Verify]
+    Plan[📋 /plan<br/>Feature → Tasks] -->|task list| Assign[🎯 /assign<br/>Tasks → Agents]
+    Assign -->|approved assignments| Execute[▶️ /execute<br/>Run & Verify]
     Execute -->|report| Done[✅ docs/plans/report.md]
 ```
 
@@ -122,7 +122,7 @@ agents/
 └── 📖 docs.md                    — documentation coverage agent
 
 skills/*/SKILL.md                  — /check, /changelog, /phase, /deploy-check,
-                                     /plan, /dispatch, /execute, /docs,
+                                     /plan, /assign, /execute, /docs,
                                      /setup-approach, + stack-specific
 
 CLAUDE.md                          — architecture rules + approach + workflow

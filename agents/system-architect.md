@@ -47,7 +47,7 @@ Given a confirmed configuration from `/setup-agents`, generate the following in 
 .claude/skills/
 ├── <name>/SKILL.md          — one per confirmed skill (standard set below)
 ├── plan/SKILL.md            — planning session (always generated)
-├── dispatch/SKILL.md        — agent/skill assignment (always generated)
+├── assign/SKILL.md          — agent/skill assignment (always generated)
 ├── execute/SKILL.md         — guided execution (always generated)
 └── docs/SKILL.md            — documentation coverage (always generated)
 
@@ -65,11 +65,11 @@ docs/
 
 The following files are always generated as part of the orchestration pipeline:
 
-1. **`.claude/agents/dispatch.md`** — Use `templates/agents/dispatch.md.hbs`. This agent handles task assignment for the `/dispatch` skill. **Copy the frontmatter verbatim from the template — `model: sonnet`, `color: yellow`. Do not change these values.**
+1. **`.claude/agents/dispatch.md`** — Use `templates/agents/dispatch.md.hbs`. This agent handles task assignment for the `/assign` skill. **Copy the frontmatter verbatim from the template — `model: sonnet`, `color: yellow`. Do not change these values.**
 
 2. **`.claude/skills/plan/SKILL.md`** — Use `templates/skills/plan.md.hbs`. Planning session skill.
 
-3. **`.claude/skills/dispatch/SKILL.md`** — Use `templates/skills/dispatch.md.hbs`. Agent/skill assignment skill.
+3. **`.claude/skills/assign/SKILL.md`** — Use `templates/skills/assign.md.hbs`. Agent/skill assignment skill.
 
 4. **`.claude/skills/execute/SKILL.md`** — Use `templates/skills/execute.md.hbs`. Guided execution skill.
 
@@ -313,7 +313,7 @@ After generating all files, verify and report:
 - Any decisions made during generation
 - `.claude/agents/dispatch.md` exists, has `model: sonnet` and `color: yellow` (verbatim from template)
 - `.claude/agents/docs.md` exists, uses template exactly, and has `model: sonnet`
-- `.claude/skills/plan/SKILL.md`, `.claude/skills/dispatch/SKILL.md`, `.claude/skills/execute/SKILL.md`, `.claude/skills/docs/SKILL.md`, `.claude/skills/setup-approach/SKILL.md` exist
+- `.claude/skills/plan/SKILL.md`, `.claude/skills/assign/SKILL.md`, `.claude/skills/execute/SKILL.md`, `.claude/skills/docs/SKILL.md`, `.claude/skills/setup-approach/SKILL.md` exist
 - `docs/plans/` directory exists
 - `docs/components/` directory exists
 - `docs/approaches-reference.md` exists and contains all 5 approach sections
