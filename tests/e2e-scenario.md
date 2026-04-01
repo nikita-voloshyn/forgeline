@@ -225,9 +225,9 @@ ls agents/*.md | wc -l  # Should be >= 4 (backend + frontend + testing + dispatc
 - [ ] `settings.local.json` has allow: `Bash(pnpm:*)`, `Bash(git:*)`, `Bash(gh pr:*)`
 - [ ] `.gitignore` updated to exclude `.claude/settings.local.json`
 
-**Hooks:**
-- [ ] `hooks/hooks.json` has PostToolUse with Biome command
-- [ ] `hooks/hooks.json` has Stop with secret scan
+**Hooks (inline in `.claude/settings.json`):**
+- [ ] `settings.json` has `hooks.PostToolUse` with Biome command on `$CLAUDE_FILE_PATH`
+- [ ] `settings.json` has `hooks.Stop` with secret scan
 
 **approaches-reference.md:**
 - [ ] Contains all 5 sections: `## Iterative + Timeboxing`, `## Shape Up`, `## TDD-First`, `## Trunk-Based`, `## YAGNI/KISS`
