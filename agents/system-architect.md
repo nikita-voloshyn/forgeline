@@ -358,28 +358,31 @@ Run this audit after all files are written. It has two parts.
 
 #### Part B: Framework pattern verification via Context7
 
-For each library in the following priority list that is present in the target project, run one focused Context7 query. Use the result to verify the corresponding generated content. Fix any outdated patterns before reporting.
+Using the stack you detected during generation and the commands you wrote into the generated files, decide which libraries are worth auditing and what to ask.
 
-| Library present | Context7 query | What to verify in generated files |
-|----------------|----------------|-----------------------------------|
-| `next` / Next.js | "Route Handler GET POST named exports NextRequest NextResponse" | backend agent Route Handler pattern |
-| `next-auth` v5 | "auth() helper Route Handler session v5" | backend agent NextAuth session retrieval pattern |
-| `prisma` | "CLI commands generate db push migrate dev with pnpm or npx" | migrate skill commands, database agent verification block |
-| `vitest` | "CLI run command coverage reporter flags" | check skill vitest command, testing agent verification block |
-| `@playwright/test` | "CLI test command run headed debug show-report" | e2e skill commands, check skill playwright command |
-| `@biomejs/biome` | "CLI check lint format write flag single file" | check skill biome command, PostToolUse hook command |
-| `eslint` (if no biome) | "CLI lint single file command" | check skill eslint command, PostToolUse hook |
-| `cargo` (Rust) | "clippy fmt check command" | agent verification blocks for Rust projects |
-| `ruff` (Python) | "CLI check fix command" | agent verification blocks for Python projects |
+**Step 1 — Build the audit list**
 
-**Query workflow:**
-1. Call `resolve-library-id` for the library name
-2. Select the result with highest benchmark score + High reputation
-3. Call `query-docs` with the resolved ID and the query from the table above
-4. Compare the returned CLI syntax and API patterns against what is written in the generated files
-5. If there is a discrepancy, update the generated file to match the current documented pattern
+From the stack you already know, select every library that satisfies both conditions:
+- It is present in the project (in dependencies, devDependencies, Cargo.toml, pyproject.toml, go.mod, etc.)
+- At least one command, API call, or code pattern referencing it appears in a generated agent or skill file
 
-Only query libraries that are actually present in the project. Skip the rest.
+For each selected library, determine:
+- The specific question to ask Context7, derived from what you actually wrote (e.g. you wrote `npx prisma migrate dev` → ask "prisma migrate dev CLI syntax and flags"; you wrote `auth()` in a Route Handler → ask "NextAuth v5 auth() helper Route Handler session pattern")
+- Which generated file(s) contain the pattern to verify
+
+**Step 2 — Run Context7 queries**
+
+For each library in the audit list:
+1. Call `resolve-library-id` with the library name
+2. Select the result with the highest benchmark score and High reputation
+3. Call `query-docs` with the resolved ID and the specific question from Step 1
+4. Compare the returned documentation against what is written in the generated file
+
+**Step 3 — Fix discrepancies**
+
+If the documentation contradicts what you wrote, update the generated file to match the current documented pattern. Apply Part A script-alignment rules at the same time (prefer package.json scripts over raw CLI where available).
+
+**Scope limit:** audit only libraries where you wrote concrete commands or API patterns. Do not query libraries used only as type imports or passive dependencies. Keep the audit focused — 3 to 8 libraries is typical.
 
 ### Final report
 
