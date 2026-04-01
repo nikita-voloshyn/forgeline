@@ -322,10 +322,10 @@ Contains: allow permissions, MCP server configurations.
 
 ## Verification
 
-After generating all files, verify and report:
-- List of every file created with a one-line description
-- Context7 lookups performed and what they informed
-- Any decisions made during generation
+Verification runs in two phases: structural checks, then a Context7 content audit. Fix any issues found before reporting.
+
+### Phase 1 — Structural checks
+
 - `.claude/agents/dispatch.md` exists, has `model: sonnet` and `color: yellow` (verbatim from template)
 - `.claude/agents/docs.md` exists, uses template exactly, and has `model: sonnet`
 - `.claude/skills/plan/SKILL.md`, `.claude/skills/assign/SKILL.md`, `.claude/skills/execute/SKILL.md`, `.claude/skills/docs/SKILL.md`, `.claude/skills/setup-approach/SKILL.md` exist
@@ -335,3 +335,56 @@ After generating all files, verify and report:
 - If approach was selected: CLAUDE.md contains a "Development Approach" section
 - CLAUDE.md contains a "Development Workflow" section
 - `.gitignore` contains `.claude/settings.local.json`
+
+### Phase 2 — Context7 content audit
+
+Run this audit after all files are written. It has two parts.
+
+#### Part A: Package scripts alignment
+
+1. Read `package.json` (or `Cargo.toml` / `pyproject.toml` for non-JS stacks) and extract all defined scripts.
+2. Collect every shell command from every generated file: agent `## Verification` blocks and all `bash` code blocks in skill files.
+3. For each collected command, check:
+   - Does it invoke a devDependency tool directly via `pnpm <tool>`? (invalid — pnpm does not proxy devDependency binaries as subcommands)
+   - Does the project have a script for this operation? If yes, the command must use `<package-manager> <script>`, with extra flags passed after `--`.
+   - If no script exists, the command must use `npx <tool>` or `<package-manager> exec <tool>`.
+4. Rewrite any non-conforming commands in-place before proceeding.
+
+**Common violations to catch:**
+- `pnpm playwright test` → `pnpm test:e2e` (if script exists) or `npx playwright test`
+- `pnpm vitest run` → valid only if `vitest` is in PATH via pnpm bin; prefer `pnpm test -- --run` if `"test": "vitest"` script exists
+- `npx prisma db push` when `"db:push": "prisma db push"` script exists → `pnpm db:push`
+- `npx prisma generate` when `"db:generate": "prisma generate"` script exists → `pnpm db:generate`
+
+#### Part B: Framework pattern verification via Context7
+
+For each library in the following priority list that is present in the target project, run one focused Context7 query. Use the result to verify the corresponding generated content. Fix any outdated patterns before reporting.
+
+| Library present | Context7 query | What to verify in generated files |
+|----------------|----------------|-----------------------------------|
+| `next` / Next.js | "Route Handler GET POST named exports NextRequest NextResponse" | backend agent Route Handler pattern |
+| `next-auth` v5 | "auth() helper Route Handler session v5" | backend agent NextAuth session retrieval pattern |
+| `prisma` | "CLI commands generate db push migrate dev with pnpm or npx" | migrate skill commands, database agent verification block |
+| `vitest` | "CLI run command coverage reporter flags" | check skill vitest command, testing agent verification block |
+| `@playwright/test` | "CLI test command run headed debug show-report" | e2e skill commands, check skill playwright command |
+| `@biomejs/biome` | "CLI check lint format write flag single file" | check skill biome command, PostToolUse hook command |
+| `eslint` (if no biome) | "CLI lint single file command" | check skill eslint command, PostToolUse hook |
+| `cargo` (Rust) | "clippy fmt check command" | agent verification blocks for Rust projects |
+| `ruff` (Python) | "CLI check fix command" | agent verification blocks for Python projects |
+
+**Query workflow:**
+1. Call `resolve-library-id` for the library name
+2. Select the result with highest benchmark score + High reputation
+3. Call `query-docs` with the resolved ID and the query from the table above
+4. Compare the returned CLI syntax and API patterns against what is written in the generated files
+5. If there is a discrepancy, update the generated file to match the current documented pattern
+
+Only query libraries that are actually present in the project. Skip the rest.
+
+### Final report
+
+After both phases complete, report:
+- List of every file created with a one-line description
+- Commands that were corrected during Phase 2 (before → after)
+- Context7 lookups performed and what each one confirmed or corrected
+- Any remaining decisions or trade-offs made during generation
