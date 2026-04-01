@@ -2,7 +2,7 @@
 
 # ⚒️ Forgeline
 
-**Scaffold a production-ready multi-agent AI development system for any project — in minutes.**
+**Scaffold a multi-agent AI development system for any project — in minutes.**
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 [![Claude Code Plugin](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://github.com/nikita-voloshyn/forgeline)
