@@ -17,6 +17,13 @@ _No active tasks._
 
 ## Done
 
+- [x] `/dispatch` → `/assign` rename — avoids built-in Claude Code command conflict (v1.0.1, PR #9/#10)
+- [x] Package Scripts Priority rule — agent prefers `package.json` scripts over raw CLI (v1.0.1, PR #10)
+- [x] Post-generation Context7 audit (Phase 2) — verifies commands and patterns after generation (v1.0.1, PR #10)
+- [x] Dynamic Context7 audit (Part B) — derives library list and queries from detected stack, no hardcoded table (v1.0.1, PR #10)
+- [x] README rewrite for first-time Claude Code users (v1.0.1, PR #9)
+- [x] "production-ready" removed from all descriptions (v1.0.1, PR #9)
+- [x] Version bump 0.4.0-beta → 1.0.0 in plugin manifests (v1.0.1, PR #9)
 - [x] `/setup-approach` skill — standalone approach reconfiguration (v0.4, PR #7)
 - [x] Multi-approach composition — selecting 2-3 approaches with conflict resolution (v0.4, PR #7)
 - [x] Custom approach (free text) — describe methodology, system architect extracts config (v0.4, PR #7)

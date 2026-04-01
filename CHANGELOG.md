@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## [Unreleased]
 
+## [1.0.1] — 2026-04-01
+
+### Fixed
+
+- `/dispatch` renamed to `/assign` across all templates — avoids conflict with Claude Code built-in `/dispatch` command
+- `pnpm playwright test` replaced with `pnpm test:e2e` (or `npx playwright`) — Playwright is a devDependency, not a pnpm subcommand
+- Package Scripts Priority rule added to system-architect.md — agent now prefers `package.json` scripts over raw CLI invocations everywhere in generated files
+- Post-generation Context7 audit (Phase 2) added to system-architect.md — verifies generated commands and API patterns against current docs after generation
+- Part B of Context7 audit is now dynamic — agent derives library list and queries from the detected stack and written commands instead of a hardcoded lookup table
+- README rewritten for first-time Claude Code users — added "What is Claude Code?", prerequisites, step-by-step first run, and development loop walkthrough
+- "production-ready" removed from all descriptions in README, plugin.json, and marketplace.json
+- Version bumped to 1.0.0 in plugin.json and marketplace.json (was 0.4.0-beta)
+- `$schema` URL corrected in generated `settings.json` — was pointing to `json-schema.store`, now `json.schemastore.org`
+
 ## [1.0.0] — 2026-04-01
 
 First stable release. All v0.x features are included and considered stable. Beta designation removed.
@@ -86,7 +100,8 @@ First stable release. All v0.x features are included and considered stable. Beta
 - Removed `skills` field from `plugin.json` — auto-discovery at `skills/*/SKILL.md` works without it
 - Added `marketplace.json` to fix `/plugin marketplace add` failing silently
 
-[Unreleased]: https://github.com/nikita-voloshyn/forgeline/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/nikita-voloshyn/forgeline/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/nikita-voloshyn/forgeline/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/nikita-voloshyn/forgeline/compare/v0.4.0-beta...v1.0.0
 [0.4.0-beta]: https://github.com/nikita-voloshyn/forgeline/compare/v0.3.0-beta...v0.4.0-beta
 [0.3.0-beta]: https://github.com/nikita-voloshyn/forgeline/compare/v0.2.0-beta...v0.3.0-beta
